@@ -1,0 +1,92 @@
+# CONTEXT.md — {{PROJECT_NAME}}
+
+> AI memory file. Auto-updated after every session (Stop hook) and every commit (post-commit hook).
+> Start every Claude Code session by reading this file first.
+> Goal: zero context loss between sessions.
+
+---
+
+## What is this
+
+{{ONE_LINE_DESCRIPTION}}
+
+**Domain:** {{DOMAIN}} | **Stack:** FastAPI + SvelteKit + PostgreSQL + Claude API
+
+---
+
+## Current state ({{DATE}})
+
+### {{PRODUCT_1}} ✅/🚧/❌
+- {{STATUS}}
+
+### {{PRODUCT_2}} ✅/🚧/❌
+- {{STATUS}}
+
+---
+
+## Architecture in one screen
+
+```
+SvelteKit SPA (frontend/build/)
+    │  Firebase Auth → cookie HTTP-only
+    ▼
+FastAPI (main.py)
+    ├── {{MODULE_1}}: src/{{path}}/
+    ├── {{MODULE_2}}: src/{{path}}/
+    └── {{MODULE_3}}: src/{{path}}/
+    ▼
+PostgreSQL (prod) / SQLite (dev)
+```
+
+---
+
+## Key modules — where is what
+
+| What I'm looking for | Where it is |
+|---|---|
+| {{FEATURE}} | `src/{{path}}/` |
+| {{FEATURE}} | `src/{{path}}/` |
+
+---
+
+## Quality rules — run before every commit
+
+```bash
+make quality   # ruff + mypy + pytest
+```
+
+---
+
+## Key decisions — don't re-open these
+
+| Decision | Why |
+|---|---|
+| {{DECISION}} | {{REASON}} |
+
+---
+
+## What NOT to do
+
+- ❌ {{CONSTRAINT}}
+- ❌ {{CONSTRAINT}}
+
+---
+
+## Required environment variables
+
+See `.env.example` for the full list.
+Critical: `ANTHROPIC_API_KEY` · `SECRET_KEY` · `DATABASE_URL`
+
+---
+
+## Specs by module
+
+| Module | Spec |
+|---|---|
+| {{MODULE}} | `specs/{{name}}.md` |
+
+---
+
+## Latest changes
+
+_Auto-updated by scripts/update_context.py_

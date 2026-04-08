@@ -1,0 +1,81 @@
+# Modular Definition — {{PROJECT_NAME}}
+
+## Principle
+
+Each module has a single responsibility. A module can fail without taking down the others.
+Modules communicate through well-defined interfaces (Pydantic models), not by direct access to internals.
+
+---
+
+## Module map
+
+```
+{{PROJECT_NAME}}
+├── core/
+│   ├── auth          -- Firebase + API Keys
+│   ├── models        -- SQLAlchemy + Pydantic base
+│   └── payments      -- Unified Reveniu webhook
+│
+├── {{product_1}}/
+│   ├── validators    -- Layer 1+2: format + local analysis (no cost)
+│   ├── analyzers     -- Layer 3+4: Claude Haiku + Sonnet
+│   └── api           -- FastAPI routes
+│
+├── {{product_2}}/
+│   ├── evaluator     -- Core business logic
+│   ├── policies/     -- One policy per entity/variant
+│   │   ├── base      -- BasePolicy + Result contract
+│   │   ├── registry  -- ACTIVE_POLICIES list
+│   │   └── <name>    -- Per-entity implementation
+│   ├── models        -- Input + Output Pydantic models
+│   └── routes        -- /api/{{product_2}}/*
+│
+└── admin/
+    └── routes        -- Admin panel (metrics, users, revenue)
+```
+
+---
+
+## Contracts between modules
+
+### {{module}} → result
+```python
+# Input: {{input_type}}
+# Output:
+{
+  "{{field}}": {{type}},
+  "{{field}}": {{type}},
+}
+```
+
+---
+
+## Extension rules
+
+### Adding a new {{entity}} to {{module}}
+1. Create `src/{{module}}/policies/{{name}}.py` extending `BasePolicy`
+2. Implement `evaluate(data, adjusted) → PolicyResult`
+3. Register in `policies/registry.py`
+4. Add `Test{{Name}}Policy` + `Test{{Name}}EdgeCases` in `tests/`
+5. Update `CONTEXT.md` with the new entity
+
+### Adding a new document type to Validate
+1. Create `src/analyzers/{{type}}_analyzer.py` extending `BaseAnalyzer`
+2. Add route in `src/api/routes.py` and `src/api/public_api_routes.py`
+3. Update `specs/document-analysis.md`
+4. Add tests in `tests/test_api.py`
+
+---
+
+## Dependencies between modules
+
+```
+admin   →  models (read-only)
+{{p1}}  →  auth, models
+{{p2}}  →  models, data
+payments → models (credit users)
+auth    →  models (users, api_keys)
+```
+
+**Rule:** No module imports directly from another business module.
+All communication goes through models or the routes layer.

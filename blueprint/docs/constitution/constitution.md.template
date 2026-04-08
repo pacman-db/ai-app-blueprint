@@ -1,0 +1,70 @@
+# Constitution — {{PROJECT_NAME}}
+
+Version: 1.0 | Date: {{DATE}}
+
+## Why this project exists
+
+{{REASON_FOR_EXISTENCE}}
+
+## Architecture overview
+
+```
+{{ARCHITECTURE_DIAGRAM}}
+```
+
+## Immutable principles
+
+### 1. {{PRINCIPLE_NAME}}
+{{DESCRIPTION}}
+
+**Why:** {{REASON}}
+
+### 2. Security by layers (defense in depth)
+Never rely on a single validation layer. Each request passes through:
+- Local validation (no cost)
+- Lightweight AI check if needed (Haiku, ~$0.001)
+- Full analysis only if previous layers pass (Sonnet, ~$0.025)
+
+**Why:** An attacker who bypasses one layer still faces the others. Also reduces API cost by filtering early.
+
+### 3. Fail explicitly
+When detecting an error or invalid input:
+- Explain exactly WHAT was detected
+- Return a structured error code
+- Do NOT approve doubtful cases "just in case"
+
+**Why:** A false negative (approving bad input) is far more damaging than a false positive.
+
+### 4. API cost proportional to risk
+The most expensive model only runs if input passed all cheap validations.
+
+**Why:** Allows scaling without cost growing linearly with bad input volume.
+
+### 5. Spec-driven architecture
+Every module has its spec in `specs/`. Every architecture decision has its ADR in `docs/plan/`. Code implements specs, not the other way around.
+
+**Why:** When the team grows or a new developer joins, decisions are already documented.
+
+### 6. Idempotency in webhooks
+All payment webhooks must check if the event was already processed before crediting. A webhook can arrive more than once.
+
+**Why:** Payment providers retry failed webhooks. Without idempotency check, a user could receive double credits.
+
+## What this project is NOT
+
+- {{NOT_THIS}}
+- {{NOT_THIS}}
+
+## Active products
+
+| Product | Description |
+|---|---|
+| {{PRODUCT}} | {{DESCRIPTION}} |
+
+## Required environment variables
+
+| Variable | Description |
+|---|---|
+| `ANTHROPIC_API_KEY` | Anthropic API key (required) |
+| `SECRET_KEY` | Session cookie signing |
+| `DATABASE_URL` | PostgreSQL in prod, sqlite in dev |

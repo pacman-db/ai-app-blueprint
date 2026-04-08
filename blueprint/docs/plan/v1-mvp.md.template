@@ -1,0 +1,85 @@
+# Plan Técnico v1 — {{PROJECT_NAME}}
+
+_Qué construimos en el MVP, en qué orden, y las decisiones de arquitectura que tomamos._
+
+---
+
+## Alcance del MVP
+
+### Incluido
+- [ ] {{FEATURE_1}}
+- [ ] {{FEATURE_2}}
+- [ ] {{FEATURE_3}}
+- [ ] Auth (Firebase: Google + Microsoft)
+- [ ] Pagos básicos (créditos o suscripción)
+- [ ] Admin panel mínimo
+
+### Excluido conscientemente
+- {{OUT_OF_SCOPE_1}} — razón: {{REASON_1}}
+- {{OUT_OF_SCOPE_2}} — razón: {{REASON_2}}
+- Tests de carga / performance — para v2
+
+---
+
+## Orden de construcción
+
+```
+Semana 1: Esqueleto
+├── FastAPI + SvelteKit conectados
+├── Auth Firebase end-to-end
+└── Deploy en Railway
+
+Semana 2: Core product
+├── {{CORE_MODULE_1}}
+└── {{CORE_MODULE_2}}
+
+Semana 3: Monetización
+├── Pagos con {{PAYMENT_PROVIDER}}
+├── Sistema de créditos / suscripción
+└── Admin panel básico
+
+Semana 4: Calidad
+├── Tests unitarios críticos
+├── Observabilidad (logs estructurados)
+└── Documentación API pública
+```
+
+---
+
+## Architecture Decision Records
+
+### ADR-001: FastAPI sobre Flask
+**Contexto:** Necesitamos async, tipado estricto y auto-documentación.
+**Decisión:** FastAPI con Pydantic v2.
+**Consecuencias:** +tipado end-to-end, +OpenAPI automático; -más verboso que Flask para rutas simples.
+
+### ADR-002: Monolito modular sobre microservicios
+**Contexto:** Equipo pequeño, MVP rápido.
+**Decisión:** Un proceso FastAPI con módulos independientes.
+**Consecuencias:** +deploy simple, +sin overhead de red; -menos escalabilidad horizontal por módulo.
+
+### ADR-003: {{DECISION_TITLE}}
+**Contexto:** {{CONTEXT}}
+**Decisión:** {{DECISION}}
+**Consecuencias:** {{CONSEQUENCES}}
+
+---
+
+## Riesgos y mitigaciones
+
+| Riesgo | Probabilidad | Impacto | Mitigación |
+|---|---|---|---|
+| Costo Claude API excede presupuesto | Media | Alto | Precheck Haiku antes de Sonnet |
+| Firebase Auth cambia política | Baja | Alto | Abstraer en `src/auth/` |
+| {{RISK_1}} | {{PROB_1}} | {{IMPACT_1}} | {{MITIGATION_1}} |
+
+---
+
+## Dependencias externas
+
+| Servicio | Para qué | Plan gratuito | Límite |
+|---|---|---|---|
+| Anthropic API | IA | No | ~$0.025/análisis Sonnet |
+| Firebase | Auth | Sí | 50K auth/mes |
+| Railway | Deploy + DB | $5 crédito/mes | 512MB RAM |
+| {{SERVICE}} | {{PURPOSE}} | {{FREE_PLAN}} | {{LIMIT}} |

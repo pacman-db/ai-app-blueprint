@@ -1,0 +1,64 @@
+# CLAUDE.md — {{PROJECT_NAME}}
+
+## Project context
+
+{{DESCRIPTION}}
+
+## Mandatory rules before finishing any task
+
+1. **Run quality checks:**
+   ```bash
+   make quality
+   ```
+   Which runs:
+   ```bash
+   .venv/bin/ruff check src/ tests/ main.py --fix
+   .venv/bin/ruff format src/ tests/ main.py
+   .venv/bin/mypy src/
+   .venv/bin/pytest tests/ -v
+   ```
+
+2. **If ruff errors:** fix them before finishing.
+3. **If mypy errors:** fix them or document why with `# type: ignore[...]`.
+4. **If tests fail:** fix code or test as appropriate.
+
+## Project structure
+
+```
+{{PROJECT_NAME}}/
+├── CLAUDE.md              # this file
+├── CONTEXT.md             # living AI context (auto-updated)
+├── .claude/
+│   ├── constitution.md    # immutable principles
+│   └── commands/          # slash commands
+├── docs/                  # architecture docs
+├── specs/                 # feature specifications
+├── src/                   # source code
+├── tests/                 # test suite
+├── frontend/              # SvelteKit SPA
+└── scripts/               # automation scripts
+```
+
+## Code conventions
+
+- **Python 3.11+** — use match/case, modern typing (`list[str]` not `List[str]`)
+- **Max line length:** 100 characters
+- **Imports:** sorted by ruff (stdlib → third-party → local)
+- **Types:** annotate all public function parameters and returns
+- **Docstrings:** only on non-trivial functions, explain *why* not *what*
+- **No obvious comments:** `# increment i` is noise; `# módulo 11 per SII Chile` is value
+
+## Document decisions
+
+When adding a new feature:
+1. If it changes architecture → update `docs/plan/v1-mvp.md` with an ADR
+2. If it changes validation behavior → update the spec in `specs/`
+3. If it adds a slash command → create `.claude/commands/<name>.md`
+
+## Required environment variables
+
+```bash
+ANTHROPIC_API_KEY=sk-ant-...   # required
+```
+
+See `.env.example` for full list.

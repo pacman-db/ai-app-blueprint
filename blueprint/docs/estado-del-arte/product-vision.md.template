@@ -1,0 +1,77 @@
+# Product Vision — {{PROJECT_NAME}}
+
+_Estado del arte: qué es el producto, para quién es, y por qué existe._
+
+---
+
+## El problema
+
+<!-- Describe el problema real que resuelves. Sé específico: quién lo sufre, cuándo, con qué frecuencia. -->
+
+{{PROBLEM_DESCRIPTION}}
+
+---
+
+## La solución
+
+<!-- Describe tu solución en 2-3 oraciones. Evita el jargon técnico. -->
+
+{{SOLUTION_DESCRIPTION}}
+
+---
+
+## Usuarios objetivo
+
+| Segmento | Descripción | Dolor principal |
+|---|---|---|
+| {{SEGMENT_1}} | {{DESC_1}} | {{PAIN_1}} |
+| {{SEGMENT_2}} | {{DESC_2}} | {{PAIN_2}} |
+
+---
+
+## Propuesta de valor
+
+> **Para** {{TARGET_USER}}, **que** {{PROBLEM}},
+> **{{PROJECT_NAME}}** es un {{CATEGORY}}
+> **que** {{KEY_BENEFIT}}.
+> **A diferencia de** {{ALTERNATIVE}},
+> **nosotros** {{DIFFERENTIATOR}}.
+
+---
+
+## Stack tecnológico (y por qué)
+
+| Capa | Tecnología | Razón |
+|---|---|---|
+| Backend | FastAPI + Python 3.11 | Tipado, async, auto-OpenAPI, Claude SDK nativo |
+| Frontend | SvelteKit | Bundle pequeño, DX excelente, SSR cuando se necesita |
+| IA | Claude API (Haiku + Sonnet) | Mejor vision + reasoning, pricing predecible |
+| Auth | Firebase | Google/Microsoft OAuth sin reinventar la rueda |
+| Pagos | {{PAYMENT_PROVIDER}} | {{PAYMENT_REASON}} |
+| DB | SQLite (dev) / PostgreSQL (prod) | Mismo ORM, zero-config en local |
+| Deploy | Railway | Push-to-deploy, env vars, PostgreSQL managed |
+
+---
+
+## Métricas de éxito (MVP)
+
+- [ ] {{METRIC_1}} (objetivo: {{TARGET_1}})
+- [ ] {{METRIC_2}} (objetivo: {{TARGET_2}})
+- [ ] {{METRIC_3}} (objetivo: {{TARGET_3}})
+
+---
+
+## Lo que este producto NO es
+
+- No es {{NOT_1}}
+- No es {{NOT_2}}
+- No reemplaza {{NOT_3}}
+
+---
+
+## Decisiones de producto conscientes
+
+| Decisión | Alternativa descartada | Razón |
+|---|---|---|
+| {{DECISION_1}} | {{ALT_1}} | {{REASON_1}} |
+| {{DECISION_2}} | {{ALT_2}} | {{REASON_2}} |

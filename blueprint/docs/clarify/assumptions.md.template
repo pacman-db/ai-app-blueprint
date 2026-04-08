@@ -1,0 +1,59 @@
+# Assumptions & Clarifications — {{PROJECT_NAME}}
+
+_Qué asumimos, qué decidimos no decidir aún, y qué preguntas quedan abiertas._
+
+---
+
+## Suposiciones sobre el usuario
+
+| Suposición | Cómo validamos |
+|---|---|
+| {{USER_ASSUMPTION_1}} | {{VALIDATION_METHOD_1}} |
+| {{USER_ASSUMPTION_2}} | {{VALIDATION_METHOD_2}} |
+| Los usuarios tienen conexión estable a internet | No validado — es un prerequisito conocido |
+
+---
+
+## Suposiciones técnicas
+
+| Suposición | Riesgo si es falsa |
+|---|---|
+| Claude API mantiene precios actuales | Ajustar modelo de precios |
+| Railway es suficiente para el volumen inicial | Migrar a VPS / K8s |
+| SQLite aguanta la carga de dev sin problemas | Siempre cierto en dev |
+| {{TECH_ASSUMPTION_1}} | {{RISK_1}} |
+
+---
+
+## Suposiciones de negocio
+
+| Suposición | Base |
+|---|---|
+| {{BUSINESS_ASSUMPTION_1}} | {{BASIS_1}} |
+| {{BUSINESS_ASSUMPTION_2}} | {{BASIS_2}} |
+| El mercado chileno acepta pago en CLP con Reveniu | Investigación de mercado |
+
+---
+
+## Preguntas abiertas
+
+Estas preguntas no tienen respuesta aún — las documentamos para no olvidarlas:
+
+1. **{{OPEN_QUESTION_1}}**
+   - Opciones: {{OPTION_A}} | {{OPTION_B}}
+   - Decidir cuando: {{TRIGGER}}
+
+2. **{{OPEN_QUESTION_2}}**
+   - Opciones: {{OPTION_A}} | {{OPTION_B}}
+   - Decidir cuando: {{TRIGGER}}
+
+---
+
+## Qué se dejó fuera conscientemente
+
+| Item | Razón | Cuándo reconsiderar |
+|---|---|---|
+| App móvil nativa | Costo alto, web suficiente para MVP | Si >40% usuarios son mobile |
+| Multi-tenant | Complejidad innecesaria para v1 | Si hay clientes enterprise |
+| {{DEFERRED_1}} | {{REASON_1}} | {{RECONSIDER_WHEN_1}} |
+| Internacionalización (i18n) | Solo mercado chileno por ahora | Si hay demanda internacional |

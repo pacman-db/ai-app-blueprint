@@ -54,7 +54,7 @@ ai-app-blueprint/
 ### Option A — New project
 ```bash
 # 1. Clone this blueprint
-git clone https://github.com/christianjcgbot/ai-app-blueprint
+git clone https://github.com/pacman-db/ai-app-blueprint
 cd ai-app-blueprint
 
 # 2. Bootstrap your project

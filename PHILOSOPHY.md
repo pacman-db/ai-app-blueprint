@@ -50,7 +50,7 @@ Every project has a `CONTEXT.md` — a living document that captures:
 
 This file is auto-updated after every session (via Claude Code Stop hook) and after every commit (via git post-commit hook). It's never stale because it updates itself.
 
-The result: **each new session costs ~70% fewer tokens on context-setting.** Claude reads the file and starts working immediately.
+The result: Claude reads the file and starts working immediately — no re-explaining, no wrong assumptions, no re-opening closed decisions.
 
 ---
 

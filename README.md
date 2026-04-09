@@ -109,7 +109,7 @@ Session N: CONTEXT.md has full project history
 
 **`update_context.py` never overwrites the full file** — it surgically replaces only the `## Últimos cambios` section using regex. Your architecture docs, decisions, and module map stay intact.
 
-**Result:** Each session costs ~70% fewer tokens on context-setting.
+**Result:** Each session starts with zero re-explaining — Claude reads the file and works immediately.
 
 ---
 

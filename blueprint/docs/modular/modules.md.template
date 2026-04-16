@@ -1,81 +1,86 @@
-# Modular Definition — {{PROJECT_NAME}}
+# Modular Design — {{PROJECT_NAME}}
 
 ## Principle
 
-Each module has a single responsibility. A module can fail without taking down the others.
-Modules communicate through well-defined interfaces (Pydantic models), not by direct access to internals.
+Each module has a single responsibility and owns its domain.
+Modules communicate through well-defined contracts (typed models or interfaces),
+not by reaching into each other's internals.
+
+**Rule:** No module imports directly from another business module.
+All cross-module communication goes through models or the routes/controller layer.
 
 ---
 
 ## Module map
 
 ```
-{{PROJECT_NAME}}
+{{PROJECT_NAME}}/
 ├── core/
-│   ├── auth          -- Firebase + API Keys
-│   ├── models        -- SQLAlchemy + Pydantic base
-│   └── payments      -- Unified Reveniu webhook
+│   ├── auth          — identity, sessions, API keys
+│   ├── models        — shared data models / DB schema
+│   └── payments      — unified payment webhook handler
 │
 ├── {{product_1}}/
-│   ├── validators    -- Layer 1+2: format + local analysis (no cost)
-│   ├── analyzers     -- Layer 3+4: Claude Haiku + Sonnet
-│   └── api           -- FastAPI routes
+│   ├── {{layer_1}}   — {{description}}
+│   ├── {{layer_2}}   — {{description}}
+│   └── routes        — HTTP endpoints
 │
 ├── {{product_2}}/
-│   ├── evaluator     -- Core business logic
-│   ├── policies/     -- One policy per entity/variant
-│   │   ├── base      -- BasePolicy + Result contract
-│   │   ├── registry  -- ACTIVE_POLICIES list
-│   │   └── <name>    -- Per-entity implementation
-│   ├── models        -- Input + Output Pydantic models
-│   └── routes        -- /api/{{product_2}}/*
+│   ├── evaluator     — core business logic
+│   ├── policies/     — one file per rule variant
+│   │   ├── base      — BasePolicy contract + result type
+│   │   ├── registry  — ACTIVE_POLICIES list
+│   │   └── <name>    — per-variant implementation
+│   ├── models        — input/output types
+│   └── routes        — HTTP endpoints
 │
 └── admin/
-    └── routes        -- Admin panel (metrics, users, revenue)
+    └── routes        — admin panel (metrics, users, revenue)
 ```
 
 ---
 
-## Contracts between modules
+## Contracts
 
-### {{module}} → result
-```python
-# Input: {{input_type}}
-# Output:
-{
-  "{{field}}": {{type}},
-  "{{field}}": {{type}},
-}
+### {{module}} → result type
+```
+Input:  {{input_type}}
+Output: {{output_type}}
+Errors: {{error_type}}
+```
+
+### {{module}} → result type
+```
+Input:  {{input_type}}
+Output: {{output_type}}
+Errors: {{error_type}}
+```
+
+---
+
+## Dependency graph
+
+```
+admin     →  models (read-only)
+{{p1}}    →  auth, models
+{{p2}}    →  models
+payments  →  models (credits users)
+auth      →  models (users, keys)
 ```
 
 ---
 
 ## Extension rules
 
-### Adding a new {{entity}} to {{module}}
-1. Create `src/{{module}}/policies/{{name}}.py` extending `BasePolicy`
-2. Implement `evaluate(data, adjusted) → PolicyResult`
+### Adding a new variant to {{module}} (policy pattern)
+1. Create `src/{{module}}/policies/{{name}}.py` implementing `BasePolicy`
+2. Implement the `evaluate(input, context) → Result` method
 3. Register in `policies/registry.py`
-4. Add `Test{{Name}}Policy` + `Test{{Name}}EdgeCases` in `tests/`
-5. Update `CONTEXT.md` with the new entity
+4. Add tests covering the variant's edge cases
+5. Write a spec in `docs/specs/{{name}}.md` if behavior is complex
 
-### Adding a new document type to Validate
-1. Create `src/analyzers/{{type}}_analyzer.py` extending `BaseAnalyzer`
-2. Add route in `src/api/routes.py` and `src/api/public_api_routes.py`
-3. Update `specs/document-analysis.md`
-4. Add tests in `tests/test_api.py`
-
----
-
-## Dependencies between modules
-
-```
-admin   →  models (read-only)
-{{p1}}  →  auth, models
-{{p2}}  →  models, data
-payments → models (credit users)
-auth    →  models (users, api_keys)
-```
-
-**Rule:** No module imports directly from another business module.
-All communication goes through models or the routes layer.
+### Adding a new module
+1. Create `src/{{new_module}}/` with its own models and routes
+2. Define the public contract in `docs/modular/modules.md`
+3. Never import from other business modules — go through models
+4. Add an ADR in `docs/plan/v1-mvp.md` explaining the new boundary

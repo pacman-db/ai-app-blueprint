@@ -1,154 +1,78 @@
-# Bootstrap — Nueva App IA
+# Bootstrap — New AI App
 
-Eres el arquitecto de este proyecto. Sigue este blueprint exactamente.
-El objetivo es una app funcional, estable y escalable desde el primer commit.
+You are the architect of this project. Follow this blueprint exactly.
+The goal: a functional, stable, and scalable app from the first commit.
 
 ---
 
-## Stack por defecto
+## Default stack
 
-| Capa | Tecnología | Notas |
+| Layer | Technology | Notes |
 |---|---|---|
-| Backend | Python 3.11 + FastAPI | Tipado estricto, async, OpenAPI automático |
-| Frontend | SvelteKit | SPA, bundle mínimo, Svelte 5 con $state() |
-| Base de datos | PostgreSQL (prod) / SQLite (dev) + SQLAlchemy | ORM + migraciones |
-| Auth | Firebase Auth (Google + Microsoft) | Cookie HTTP-only |
-| Pagos | Reveniu | CLP nativo, webhooks |
-| Deploy | Railway | PostgreSQL managed + app en un solo lugar |
-| IA | Claude API (Anthropic) | Haiku para tareas simples, Sonnet para análisis |
-| Calidad | ruff + mypy + pytest | Sin excepciones |
+| Backend | Python 3.11+ · FastAPI | Strict typing, async, auto OpenAPI |
+| Frontend | SvelteKit | SPA, minimal bundle, Svelte 5 `$state()` |
+| Database | PostgreSQL (prod) / SQLite (dev) · SQLAlchemy | ORM + migrations |
+| Auth | Firebase Auth (Google + Microsoft) | HTTP-only cookie |
+| Payments | Stripe (global) · Reveniu (LATAM) | Choose by market |
+| Deploy | Railway | Managed PostgreSQL + app in one place |
+| AI | Claude API (Anthropic) | Haiku for cheap tasks, Sonnet for analysis |
+| Quality | ruff · mypy · pytest | No exceptions |
+
+> **Stack-agnostic option:** If the project doesn't use this stack, replace what doesn't apply.
+> The blueprint structure works with any language or framework.
 
 ---
 
-## Paso 1 — Estructura de carpetas
+## Step 1 — Project structure
 
-Crear exactamente esta estructura antes de escribir código:
+Create exactly this structure before writing any code:
 
 ```
-<nombre-proyecto>/
-├── CLAUDE.md                    # instrucciones del proyecto para Claude Code
-├── CONTEXT.md                   # contexto vivo (se actualiza automáticamente)
-├── .env.example                 # variables documentadas (nunca .env en git)
-├── .editorconfig
+<project-name>/
+├── CLAUDE.md                    # Claude Code rules + context pointer
+├── CONTEXT.md                   # living AI context (auto-updated)
+├── .blueprint                   # config: BLUEPRINT_LANG, PROJECT_NAME
+├── .env.example                 # documented env vars (never .env in git)
 ├── .gitignore
 ├── Makefile
-├── Procfile
-├── Dockerfile
-├── pyproject.toml
-├── requirements.txt
-├── requirements-dev.txt
 │
 ├── docs/
 │   ├── estado-del-arte/
-│   │   └── product-vision.md    # qué, para quién, por qué
+│   │   └── product-vision.md    # what, for whom, why now
 │   ├── constitution/
-│   │   └── constitution.md      # principios inmutables
+│   │   └── constitution.md      # immutable principles (+ auto Project Status)
 │   ├── plan/
-│   │   └── v1-mvp.md            # plan técnico + ADRs
+│   │   └── v1-mvp.md            # technical plan + ADRs (+ auto Build Progress)
 │   ├── clarify/
-│   │   └── assumptions.md       # supuestos y decisiones tempranas
+│   │   └── assumptions.md       # assumptions + open questions (+ auto Last Review)
 │   ├── modular/
-│   │   └── modules.md           # contratos entre módulos
-│   └── sdd/
-│       └── arquitectura.md      # system design document
-│
-├── specs/                       # una spec por feature
+│   │   └── modules.md           # module contracts
+│   ├── sdd/
+│   │   └── arquitectura.md      # system design document
+│   └── specs/                   # one spec per feature
+│       └── _spec.template.md    # use this as starting point
 │
 ├── scripts/
-│   ├── update_context.py        # auto-actualiza CONTEXT.md
-│   └── install_hooks.sh         # instala git hooks
+│   ├── update_docs.py           # auto-updates all living docs
+│   └── install_hooks.sh         # installs git hooks
 │
 ├── .github/
 │   ├── workflows/
-│   │   └── ci.yml               # ruff + mypy + pytest en cada push
+│   │   └── ci.yml               # quality gate on every push
 │   └── PULL_REQUEST_TEMPLATE.md
 │
-├── observability/
-│   └── logging.md
-│
-├── src/
-│   ├── models/                  # SQLAlchemy + Pydantic
-│   ├── auth/                    # Firebase + API Keys
-│   ├── api/                     # rutas FastAPI
-│   └── products/                # un directorio por producto
-│
+├── src/                         # source code
 ├── tests/
 │   └── conftest.py
 │
-├── frontend/                    # SvelteKit
-│   ├── src/
-│   │   └── routes/
-│   ├── package.json
-│   └── svelte.config.js
-│
 └── .claude/
-    ├── settings.json            # hooks Stop + permisos
-    └── commands/                # slash commands del proyecto
+    ├── settings.json            # Stop hook → update_docs.py
+    └── commands/                # project slash commands
 ```
 
 ---
 
-## Paso 2 — Instalación
-
-### Python
-```bash
-python3.11 -m venv .venv
-.venv/bin/pip install fastapi uvicorn sqlalchemy pydantic alembic
-.venv/bin/pip install anthropic httpx python-multipart python-jose
-.venv/bin/pip install ruff mypy pytest pytest-asyncio httpx --group dev
-```
-
-### SvelteKit
-```bash
-npm create svelte@latest frontend
-cd frontend && npm install
-```
-
-### requirements.txt mínimo
-```
-fastapi>=0.110
-uvicorn[standard]>=0.27
-sqlalchemy>=2.0
-pydantic>=2.0
-alembic>=1.13
-anthropic>=0.20
-httpx>=0.27
-python-multipart>=0.0.9
-```
-
-### requirements-dev.txt
-```
-ruff>=0.4
-mypy>=1.9
-pytest>=8.0
-pytest-asyncio>=0.23
-```
-
----
-
-## Paso 3 — Configuración de calidad (pyproject.toml)
-
-```toml
-[tool.ruff]
-line-length = 100
-target-version = "py311"
-
-[tool.ruff.lint]
-select = ["E", "F", "I", "N", "UP"]
-
-[tool.mypy]
-python_version = "3.11"
-strict = false
-ignore_missing_imports = true
-
-[tool.pytest.ini_options]
-asyncio_mode = "auto"
-testpaths = ["tests"]
-```
-
----
-
-## Paso 4 — Hooks automáticos (siempre A + B)
+## Step 2 — Auto-context hooks (always install both)
 
 ### A — Claude Code Stop Hook (.claude/settings.json)
 ```json
@@ -157,8 +81,8 @@ testpaths = ["tests"]
     "Stop": [{
       "hooks": [{
         "type": "command",
-        "command": "python3 scripts/update_context.py 2>/dev/null || true",
-        "statusMessage": "Actualizando CONTEXT.md..."
+        "command": "python3 scripts/update_docs.py 2>/dev/null || true",
+        "statusMessage": "Updating living docs..."
       }]
     }]
   }
@@ -170,12 +94,37 @@ testpaths = ["tests"]
 bash scripts/install_hooks.sh
 ```
 
-El script `scripts/update_context.py` lee los últimos commits y actualiza
-la sección `## Últimos cambios` en `CONTEXT.md` automáticamente.
+`scripts/update_docs.py` runs after every commit AND every session end, updating:
+- `CONTEXT.md` → `## Recent Changes`
+- `docs/constitution/constitution.md` → `## Project Status`
+- `docs/clarify/assumptions.md` → `## Last Review`
+- `docs/plan/v1-mvp.md` → `## Build Progress`
+- `docs/specs/*.md` → `<!-- status: ... -->` marker
 
 ---
 
-## Paso 5 — CI/CD (.github/workflows/ci.yml)
+## Step 3 — Quality gate (Makefile)
+
+```makefile
+quality:
+	.venv/bin/ruff check src/ tests/ main.py --fix
+	.venv/bin/ruff format src/ tests/ main.py
+	.venv/bin/mypy src/
+	.venv/bin/pytest tests/ -v
+
+dev:
+	.venv/bin/uvicorn main:app --reload
+
+test:
+	.venv/bin/pytest tests/ -v
+
+build:
+	cd frontend && npm run build
+```
+
+---
+
+## Step 4 — CI/CD (.github/workflows/ci.yml)
 
 ```yaml
 name: CI
@@ -204,89 +153,69 @@ jobs:
 
 ---
 
-## Paso 6 — CONTEXT.md inicial
+## Step 5 — Fill in CONTEXT.md
 
-Crear con este template y completar antes de codear:
+Complete before starting to code:
 
 ```markdown
-# CONTEXT.md — <Nombre Proyecto>
+# CONTEXT.md — <Project Name>
 
-## Qué es
-<Una línea: qué hace y para quién>
+## What is this
+<One line: what it does and for whom>
 
-## Productos
-- **<Producto 1>** — descripción breve
-- **<Producto 2>** — descripción breve
+## Current state
+- 🚧 Setup
 
-## Estado actual
-- [ ] Setup inicial
-- [ ] Módulo X
-- [ ] Deploy
+## Architecture in one screen
+<ASCII diagram>
 
-## Arquitectura
-<diagrama ASCII básico>
-
-## Módulos clave
-| Qué busco | Dónde está |
+## Key modules
+| What I'm looking for | Where it is |
 |---|---|
 
-## Reglas de calidad
-make quality  # ruff + mypy + pytest
+## Quality rules
+make quality  # linting + types + tests
 
-## Decisiones clave
-| Decisión | Por qué |
+## Key decisions
+| Decision | Why |
 |---|---|
 
-## Lo que NO hacer
+## What NOT to do
 - ❌
+
+## Recent Changes
+_Auto-updated by scripts/update_docs.py_
 ```
 
 ---
 
-## Paso 7 — Makefile mínimo
+## Rules always active
 
-```makefile
-quality:
-	.venv/bin/ruff check src/ tests/ main.py --fix
-	.venv/bin/ruff format src/ tests/ main.py
-	.venv/bin/mypy src/
-	.venv/bin/pytest tests/ -v
+1. **Before finishing any task:** `make quality` must pass
+2. **Each new feature:** write spec in `docs/specs/<name>.md` **before** coding
+3. **Each architectural decision:** add ADR in `docs/plan/v1-mvp.md`
+4. **Each session end:** all living docs update automatically (Stop hook)
+5. **Each commit:** all living docs update automatically (post-commit hook)
+6. **Never commit `.env`** — only `.env.example` with descriptions
+7. **No tests, no merge**
 
-dev:
-	.venv/bin/uvicorn main:app --reload
+---
 
-test:
-	.venv/bin/pytest tests/ -v
+## Stack variants
 
-build:
-	cd frontend && npm run build
+### Backend API only (no frontend)
+- Remove `frontend/`
+- Add `contracts/openapi.yml` from day 1
+
+### Frontend only (no separate backend)
+- Use SvelteKit server routes (`+server.ts`) as the backend
+- One repo, one deploy
+
+### With AI (recommended pipeline)
 ```
-
----
-
-## Reglas siempre activas
-
-1. **Antes de terminar cualquier tarea:** `make quality` debe pasar sin errores
-2. **Cada módulo nuevo:** spec en `specs/<modulo>.md` antes de codear
-3. **Cada decisión arquitectónica:** ADR en `docs/plan/v1-mvp.md`
-4. **Cada sesión que termina:** CONTEXT.md se actualiza solo (Stop hook)
-5. **Cada commit:** CONTEXT.md se actualiza solo (post-commit hook)
-6. **Nunca subir `.env`** — solo `.env.example` con descripciones
-7. **Tests antes de PR** — sin tests, no se mergea
-
----
-
-## Variantes de stack
-
-### Solo backend (API sin frontend)
-- Eliminar `frontend/`
-- Agregar `contracts/openapi.yml` desde el día 1
-
-### Solo frontend estático
-- Eliminar `src/` FastAPI
-- Usar SvelteKit con adaptador estático
-
-### Con IA generativa
-- Instalar `anthropic`
-- Pipeline 4 capas: validación local → Haiku precheck → Sonnet análisis
-- Nunca llamar Sonnet sin pasar por Haiku primero (costo)
+Input
+  ▼ Layer 1: Local validation      Cost: $0.00
+  ▼ Layer 2: Cheap AI precheck     Cost: ~$0.001 (Haiku)
+  ▼ Layer 3: Full AI analysis      Cost: ~$0.025 (Sonnet)
+```
+Never call the expensive model without passing through the cheap one first.

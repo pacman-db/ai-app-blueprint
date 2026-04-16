@@ -2,113 +2,85 @@
 
 ## Overview
 
-{{PROJECT_NAME}} is a modular monolith: a single FastAPI process that exposes multiple independent products.
-Each product can fail without affecting the others.
+{{PROJECT_NAME}} is a {{ARCHITECTURE_TYPE}} (e.g. modular monolith / microservices / serverless):
+{{ARCHITECTURE_DESCRIPTION}}
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                  Browser / API Client                │
+│               Browser / API Client                   │
 └──────────────┬──────────────────────────────────────┘
                │ HTTPS
 ┌──────────────▼──────────────────────────────────────┐
-│           SvelteKit SPA (frontend/build/)            │
-│     Firebase Auth → ID token → HTTP-only cookie      │
+│              {{FRONTEND}} (client layer)              │
+│         Auth token → HTTP-only session cookie         │
 └──────────────┬──────────────────────────────────────┘
                │
 ┌──────────────▼──────────────────────────────────────┐
-│                FastAPI (main.py)                     │
+│              {{BACKEND}} (main.{{ext}})               │
 │                                                      │
-│  ┌─────────────┐  ┌──────────────┐  ┌────────────┐  │
-│  │ {{Product1}}│  │ {{Product2}} │  │{{Product3}}│  │
-│  └──────┬──────┘  └──────┬───────┘  └─────┬──────┘  │
-│         │                │                │          │
-│  ┌──────▼────────────────────────────────▼───────┐   │
-│  │          Auth · Payments · Admin               │   │
-│  └──────────────────────┬──────────────────────  ┘   │
-└─────────────────────────┼───────────────────────────┘
-                          │
-         ┌────────────────┼──────────────┐
-         ▼                ▼              ▼
-    PostgreSQL      Claude API       Reveniu
-    (Railway)      (Anthropic)      (Payments)
+│  ┌───────────────┐  ┌───────────────┐               │
+│  │  {{Product1}} │  │  {{Product2}} │  ...           │
+│  └───────┬───────┘  └───────┬───────┘               │
+│          │                  │                        │
+│  ┌───────▼──────────────────▼──────────────────┐    │
+│  │         Auth · Payments · Admin              │    │
+│  └─────────────────────┬────────────────────── ┘    │
+└────────────────────────┼───────────────────────────┘
+                         │
+          ┌──────────────┼──────────────┐
+          ▼              ▼              ▼
+      {{DATABASE}}   {{AI_API}}    {{PAYMENT}}
 ```
 
 ---
 
 ## Components
 
-### 1. Frontend — SvelteKit SPA
-**Location:** `frontend/`
-**Compiled to:** `frontend/build/` (served as static by FastAPI)
+### 1. Frontend — {{FRONTEND_TECH}}
+**Location:** `{{frontend_path}}/`
 
 Responsibilities:
 - UI for all products
-- Firebase Auth (Google + Microsoft)
-- Local state with Svelte 5 `$state()`
-- Client-side PDF generation with html2pdf.js
+- User authentication (obtains session token)
+- Client-side state management
 
-**Does NOT:** make direct calls to Claude, business logic, security validations.
-
----
-
-### 2. AI Pipeline — 4 layers
-**Location:** `src/validators/` + `src/analyzers/`
-
-```
-input received
-    │
-    ▼ Layer 1: Format/size validation
-    │  Cost: $0.00
-    │
-    ▼ Layer 2: Local pixel analysis (Pillow)
-    │  Cost: $0.00
-    │
-    ▼ Layer 3: Claude Haiku precheck
-    │  Binary question: is this valid input?
-    │  Cost: ~$0.001
-    │
-    ▼ Layer 4: Claude Sonnet full analysis
-       Complete analysis with structured output
-       Cost: ~$0.025
-```
-
-**Key principle:** Each more expensive layer only runs if the previous one passed.
+**Does NOT:** contain business logic, perform security validations, call AI APIs directly.
 
 ---
 
-### 3. {{Product}} — Rules engine
-**Location:** `src/products/{{product}}/`
+### 2. {{Core product}} — {{DESCRIPTION}}
+**Location:** `src/{{product}}/`
 
 ```
-Input (Pydantic)
+Input received
     │
-    ▼ evaluator.py — Core calculation
-    │  Returns AdjustedData (contract for all policies)
+    ▼ Step 1: {{validation_step}}     Cost: {{cost}}
     │
-    ▼ policies/registry.py — ACTIVE_POLICIES
-       For each policy:
-           policy.evaluate(data, adjusted) → PolicyResult
+    ▼ Step 2: {{processing_step}}     Cost: {{cost}}
+    │
+    ▼ Step 3: {{output_step}}         Cost: {{cost}}
 ```
+
+**Key principle:** {{PRINCIPLE}}
 
 ---
 
-### 4. Auth — Two layers
+### 3. Auth — {{AUTH_PROVIDER}}
 **Location:** `src/auth/`
 
 | Layer | For whom | How |
 |---|---|---|
-| Firebase + cookie | Web users | ID token → HTTP-only signed cookie |
-| API Key | B2B API clients | `X-API-Key: ik_live_...` in header |
-
-**Double logout required:** Firebase (frontend) + `/api/auth/logout` (backend).
+| {{AUTH_METHOD_1}} | {{FOR_1}} | {{HOW_1}} |
+| {{AUTH_METHOD_2}} | {{FOR_2}} | {{HOW_2}} |
 
 ---
 
-### 5. Payments — Unified webhook
-**Location:** `src/api/payment_routes.py`
+### 4. Payments
+**Location:** `src/{{payments_path}}/`
 
-Single endpoint `/api/payment/webhook` detects payment type by amount/context.
-**Idempotency:** checks `subscription_id` before crediting. A webhook can arrive twice.
+- Provider: {{PAYMENT_PROVIDER}}
+- Webhook endpoint: `{{WEBHOOK_PATH}}`
+- **Idempotency required:** check if event was already processed before crediting.
 
 ---
 
@@ -116,18 +88,14 @@ Single endpoint `/api/payment/webhook` detects payment type by amount/context.
 
 ### Main tables
 ```
-users               -- credits, active API plan
-reports             -- validation results (no images stored)
-api_keys            -- live/test keys per user and product
-api_subscription_requests -- B2B plan requests
-credit_packs        -- credit purchase history
-admins              -- separate table for admin panel
+{{TABLE_1}}   — {{PURPOSE_1}}
+{{TABLE_2}}   — {{PURPOSE_2}}
+{{TABLE_3}}   — {{PURPOSE_3}}
 ```
 
 ### Convention
-- Dev: SQLite at `./dev.db`
-- Prod: PostgreSQL on Railway (`DATABASE_URL` variable)
-- ORM: SQLAlchemy with `get_db()` dependency in each route
+- Dev: local DB (SQLite, JSON, etc.) at `./dev.{{ext}}`
+- Prod: managed DB (`{{DATABASE_URL_VAR}}` environment variable)
 
 ---
 
@@ -136,13 +104,11 @@ admins              -- separate table for admin panel
 ```
 git push origin main
     │
-    ▼ Railway detects push
+    ▼ {{CI_PROVIDER}} detects push
     │
-    ▼ nixpacks.toml: installs Python 3.11 + Node.js
-    │  1. npm install && npm run build (frontend/build/)
-    │  2. pip install -r requirements.txt
+    ▼ Build step: {{BUILD_COMMAND}}
     │
-    ▼ Procfile: uvicorn main:app --host 0.0.0.0 --port $PORT
+    ▼ Start: {{START_COMMAND}}
 ```
 
 ---
@@ -151,8 +117,8 @@ git push origin main
 
 | ADR | Decision |
 |---|---|
-| ADR-001 | FastAPI over Flask (typing, async, auto OpenAPI) |
-| ADR-002 | Modular monolith over microservices (small team) |
-| ADR-003 | Firebase Auth over custom auth (don't reinvent the wheel) |
-| ADR-004 | Reveniu over Stripe (native CLP support) |
-| ADR-005 | Haiku precheck before Sonnet (cost proportional to risk) |
+| ADR-001 | {{DECISION_1}} |
+| ADR-002 | {{DECISION_2}} |
+| ADR-003 | {{DECISION_3}} |
+
+_Full ADR details in `docs/plan/v1-mvp.md`_

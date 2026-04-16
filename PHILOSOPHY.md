@@ -13,7 +13,8 @@ You open Claude Code, start a new conversation, and the first thing you do is sp
 - What NOT to touch
 - What's next
 
-That's not building. That's paying to re-explain your own project to your own tool. At $3-15 per million tokens, that's expensive. At 30-60 minutes per week, that's a lot of time.
+That's not building. That's paying to re-explain your own project to your own tool.
+At $3-15 per million tokens, that's expensive. At 30-60 minutes per week, that's a lot of time.
 
 ---
 
@@ -23,7 +24,7 @@ The best developers don't carry everything in their heads. They write things dow
 
 **The same principle applies to AI-assisted development, but more strictly.**
 
-An AI doesn't have a memory that persists between sessions. It needs to reconstruct context from what it can read. If your repo is well-documented, the AI is productive immediately. If it's not, you pay the context tax every single session.
+An AI doesn't have memory that persists between sessions. It needs to reconstruct context from what it can read. If your repo is well-documented, the AI is productive immediately. If it's not, you pay the context tax every single session.
 
 ---
 
@@ -35,7 +36,7 @@ The difference:
 - Human docs explain *what* the system does
 - AI-optimized docs also explain *what decisions were made*, *why*, and *what not to do*
 
-That last part is crucial. An AI that doesn't know what decisions were already made will re-open them. An AI that doesn't know what not to touch will touch it. An AI that doesn't know why something was built a certain way will refactor it into something worse.
+That last part is crucial. An AI that doesn't know what decisions were already made will re-open them. An AI that doesn't know what not to touch will touch it. An AI that doesn't know *why* something was built a certain way will refactor it into something worse.
 
 ---
 
@@ -48,24 +49,66 @@ Every project has a `CONTEXT.md` — a living document that captures:
 - What NOT to do (and why)
 - Where to find things
 
-This file is auto-updated after every session (via Claude Code Stop hook) and after every commit (via git post-commit hook). It's never stale because it updates itself.
+This file is auto-updated after every session (Claude Code Stop hook) and after every commit (git post-commit hook). It's never stale because it updates itself.
 
-The result: Claude reads the file and starts working immediately — no re-explaining, no wrong assumptions, no re-opening closed decisions.
+**Result:** Claude reads the file and starts working immediately — no re-explaining, no wrong assumptions, no re-opening closed decisions.
+
+---
+
+## All docs are living docs
+
+In v2, the auto-update system extends beyond CONTEXT.md. Every structural doc updates itself:
+
+| Doc | Auto-updated section | What it captures |
+|---|---|---|
+| `CONTEXT.md` | `## Recent Changes` | Last commits classified by type |
+| `constitution.md` | `## Project Status` | Phase, feature count, last decision |
+| `assumptions.md` | `## Last Review` | Staleness warning, open question count |
+| `plan/v1-mvp.md` | `## Build Progress` | Total commits, features shipped, last feature |
+| `specs/*.md` | `<!-- status -->` marker | Whether spec is being actively developed |
+
+The rest of each doc (principles, decisions, open questions) remains manual — those require human judgment. Only the measurable status sections update automatically.
+
+---
+
+## The greenfield problem
+
+SpecKit and SDD are powerful — but they assume you arrive with a clear vision.
+
+**For a product built from zero, reality is different:**
+- The idea mutates as you build
+- What you thought was an immutable principle on day 1 gets revised by week 3
+- The specs you wrote in week 1 are obsolete by week 2
+- The architecture you planned doesn't match what the product became
+
+Traditional blueprints treat docs as *input* documents — written before the project starts, frozen after.
+This blueprint treats all docs as *living* documents — they start minimal and evolve with the project.
+
+**Two phases, same docs:**
+
+| Phase | Characteristics | What changes |
+|---|---|---|
+| Exploratory | <20 commits, idea still mutating | Everything — even the constitution |
+| Stable | ≥20 commits, core design settled | Specs and ADRs, not principles |
+
+The `update_docs.py` script detects phase from commit count and updates the Project Status section accordingly. It also warns when structural docs haven't been manually updated in a long time — a signal that reality may have outrun the documentation.
 
 ---
 
 ## Spec-driven development (SpecKit)
 
-The other half of the blueprint is writing specs before code.
+**Write the spec before you write the code.**
 
 Not because it's "proper software engineering" — because it makes the AI write better code.
 
 When Claude has a spec that says:
-> "The validation pipeline has 4 layers. Layer 1 is format/size (no cost). Layer 2 is Pillow pixel analysis (no cost). Layer 3 is Claude Haiku precheck (~$0.001). Layer 4 is Claude Sonnet full analysis (~$0.025). Each layer only runs if the previous one passed."
+> "The validation pipeline has 4 layers. Layer 1 is format/size (no cost). Layer 2 is local pixel analysis (no cost). Layer 3 is a cheap AI precheck (~$0.001). Layer 4 is full AI analysis (~$0.025). Each layer only runs if the previous one passed."
 
 ...it writes code that implements exactly that. Without the spec, it writes whatever seems reasonable, which may or may not match what you had in mind.
 
 Specs are cheap to write (10-20 minutes). Fixing code that doesn't match what you meant is expensive.
+
+The spec lives in `docs/specs/<feature>.md`. The `<!-- status -->` marker in the header auto-updates to reflect whether the spec is being actively developed (`in-progress`) or not yet started (`pending`).
 
 ---
 
@@ -74,20 +117,20 @@ Specs are cheap to write (10-20 minutes). Fixing code that doesn't match what yo
 Modules with clear contracts mean Claude knows exactly what it can and can't change.
 
 When a module has a defined interface:
-```python
-# evaluator.py returns DatosAjustados
-# policy.evaluar(datos, ajustado) returns PolicyResult
+```
+evaluator.py → returns AdjustedData
+policy.evaluate(data, adjusted) → returns PolicyResult
 ```
 
-Claude can change the internals of any module without breaking others. Without clear contracts, every change is a potential breakage.
+Claude can change the internals of any module without breaking others. Without clear contracts, every change is a potential cascade.
 
 ---
 
 ## The quality gate
 
-`make quality` runs ruff + mypy + pytest before every commit. This isn't optional.
+`make quality` runs linters + type checker + tests before every commit. This isn't optional.
 
-The reason: Claude Code writes code fast. Sometimes too fast. The quality gate catches:
+The reason: Claude Code writes code fast — sometimes too fast. The quality gate catches:
 - Type errors that would surface in production
 - Style inconsistencies that accumulate into unreadable code
 - Regressions in existing functionality
@@ -96,17 +139,34 @@ With CI running the same checks on GitHub, nothing broken ever reaches main.
 
 ---
 
-## Vibecoding + Blueprint = The future
+## Structured Vibe Coding
 
-The best development workflow right now is:
-1. Human defines the problem (Estado del Arte)
-2. Human sets the principles (Constitution)
-3. Human and AI design together (Plan, Specs, SDD)
-4. AI implements (Development)
-5. AI verifies (Tests, Quality)
-6. Everything is documented automatically (CONTEXT.md, hooks)
-7. Next session starts with full context
+This is the name for what this blueprint enables.
 
-This is not replacing developers. It's removing the parts that slow developers down — boilerplate, repetitive implementation, context-switching overhead — while keeping the parts that require human judgment: defining problems, setting constraints, making architectural decisions.
+Traditional vibecoding: fast but chaotic. The AI builds without memory of why it built what it built. Decisions get re-opened. Work gets duplicated. Context evaporates between sessions.
 
-The developer who masters this workflow builds 5x faster without sacrificing quality or stability.
+Structured Vibe Coding keeps the speed and freedom of vibecoding, but adds:
+
+| What | How |
+|---|---|
+| **Structure that builds itself** | Docs auto-update after every commit |
+| **Guidance that evolves** | Specs, constitution, and ADRs grow with the product |
+| **Context that never expires** | CONTEXT.md always reflects the current state |
+| **Decisions that don't repeat** | ADRs document why — Claude won't re-suggest what was already decided |
+
+The best development workflow right now:
+
+1. Human arrives with an idea
+2. Blueprint structures everything from scratch (via `/bootstrap-app`)
+3. Human and AI design together (constitution, specs, ADRs)
+4. AI implements — guided by specs
+5. AI verifies — quality gate passes
+6. Everything documents itself — hooks run, docs update
+7. Next session: Claude reads the docs, starts working in 30 seconds
+
+**This is not replacing developers.** It removes the parts that slow developers down —
+boilerplate, repetitive implementation, context-switching overhead —
+while keeping the parts that require human judgment: defining problems, setting constraints, making architectural decisions.
+
+The developer who masters this workflow builds faster without sacrificing quality or stability.
+And unlike traditional vibecoding, the project stays coherent as it grows — because the documentation grows with it.

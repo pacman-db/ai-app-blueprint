@@ -1,59 +1,63 @@
 # Constitution — {{PROJECT_NAME}}
 
-Version: 1.0 | Date: {{DATE}}
+Version: 1.0 | Created: {{DATE}}
+
+> Immutable principles. Change these only with explicit team discussion.
+> The **## Project Status** section at the bottom is auto-updated after every commit.
+> Everything else requires a deliberate decision to change.
+
+---
 
 ## Why this project exists
 
 {{REASON_FOR_EXISTENCE}}
 
-## Architecture overview
+---
 
-```
-{{ARCHITECTURE_DIAGRAM}}
-```
-
-## Immutable principles
+## Principles
 
 ### 1. {{PRINCIPLE_NAME}}
 {{DESCRIPTION}}
 
 **Why:** {{REASON}}
 
-### 2. Security by layers (defense in depth)
-Never rely on a single validation layer. Each request passes through:
-- Local validation (no cost)
-- Lightweight AI check if needed (Haiku, ~$0.001)
-- Full analysis only if previous layers pass (Sonnet, ~$0.025)
-
-**Why:** An attacker who bypasses one layer still faces the others. Also reduces API cost by filtering early.
-
-### 3. Fail explicitly
+### 2. Fail explicitly
 When detecting an error or invalid input:
-- Explain exactly WHAT was detected
-- Return a structured error code
-- Do NOT approve doubtful cases "just in case"
+- Say exactly *what* was detected
+- Return a structured, actionable error
+- Never approve doubtful cases "just in case"
 
 **Why:** A false negative (approving bad input) is far more damaging than a false positive.
 
-### 4. API cost proportional to risk
-The most expensive model only runs if input passed all cheap validations.
+### 3. Spec-driven
+Every feature has a spec in `docs/specs/` written *before* the code.
+The spec is the contract — the code implements it, not the other way around.
 
-**Why:** Allows scaling without cost growing linearly with bad input volume.
+**Why:** When Claude has a spec, it writes code that implements exactly that.
+Without it, it writes what seems reasonable, which may not match what you meant.
 
-### 5. Spec-driven architecture
-Every module has its spec in `specs/`. Every architecture decision has its ADR in `docs/plan/`. Code implements specs, not the other way around.
+### 4. Quality gate is non-negotiable
+`make quality` must pass before every commit. No exceptions, no workarounds.
 
-**Why:** When the team grows or a new developer joins, decisions are already documented.
+**Why:** Claude writes code fast — sometimes too fast. The quality gate catches
+type errors, regressions, and style drift before they reach production.
 
-### 6. Idempotency in webhooks
-All payment webhooks must check if the event was already processed before crediting. A webhook can arrive more than once.
+### 5. Docs evolve with the product
+Constitution, clarify, specs, and ADRs are living documents.
+They reflect what the project *became*, not just what it was designed to be.
+Update them when the product changes direction.
 
-**Why:** Payment providers retry failed webhooks. Without idempotency check, a user could receive double credits.
+**Why:** A doc that doesn't reflect reality is worse than no doc.
+It misleads the AI into defending decisions that were already reversed.
+
+---
 
 ## What this project is NOT
 
-- {{NOT_THIS}}
-- {{NOT_THIS}}
+- ❌ {{NOT_THIS}}
+- ❌ {{NOT_THIS}}
+
+---
 
 ## Active products
 
@@ -61,10 +65,16 @@ All payment webhooks must check if the event was already processed before credit
 |---|---|
 | {{PRODUCT}} | {{DESCRIPTION}} |
 
+---
+
 ## Required environment variables
 
 | Variable | Description |
 |---|---|
-| `ANTHROPIC_API_KEY` | Anthropic API key (required) |
-| `SECRET_KEY` | Session cookie signing |
-| `DATABASE_URL` | PostgreSQL in prod, sqlite in dev |
+| `{{ENV_VAR}}` | {{DESCRIPTION}} |
+
+---
+
+## Project Status
+
+_Auto-updated by scripts/update_docs.py_

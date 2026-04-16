@@ -10,32 +10,32 @@
 
 {{ONE_LINE_DESCRIPTION}}
 
-**Domain:** {{DOMAIN}} | **Stack:** FastAPI + SvelteKit + PostgreSQL + Claude API
+**Domain:** {{DOMAIN}} | **Stack:** {{STACK}}
 
 ---
 
 ## Current state ({{DATE}})
 
 ### {{PRODUCT_1}} ✅/🚧/❌
-- {{STATUS}}
+- {{STATUS_1}}
 
 ### {{PRODUCT_2}} ✅/🚧/❌
-- {{STATUS}}
+- {{STATUS_2}}
 
 ---
 
 ## Architecture in one screen
 
 ```
-SvelteKit SPA (frontend/build/)
-    │  Firebase Auth → cookie HTTP-only
+{{FRONTEND}} (client)
+    │  Auth → session token
     ▼
-FastAPI (main.py)
-    ├── {{MODULE_1}}: src/{{path}}/
-    ├── {{MODULE_2}}: src/{{path}}/
-    └── {{MODULE_3}}: src/{{path}}/
+{{BACKEND}} (main entry point)
+    ├── {{MODULE_1}}: {{path_1}}
+    ├── {{MODULE_2}}: {{path_2}}
+    └── {{MODULE_3}}: {{path_3}}
     ▼
-PostgreSQL (prod) / SQLite (dev)
+{{DATABASE}} (prod) / local DB (dev)
 ```
 
 ---
@@ -44,15 +44,15 @@ PostgreSQL (prod) / SQLite (dev)
 
 | What I'm looking for | Where it is |
 |---|---|
-| {{FEATURE}} | `src/{{path}}/` |
-| {{FEATURE}} | `src/{{path}}/` |
+| {{FEATURE}} | `{{path}}` |
+| {{FEATURE}} | `{{path}}` |
 
 ---
 
 ## Quality rules — run before every commit
 
 ```bash
-make quality   # ruff + mypy + pytest
+make quality
 ```
 
 ---
@@ -74,19 +74,10 @@ make quality   # ruff + mypy + pytest
 
 ## Required environment variables
 
-See `.env.example` for the full list.
-Critical: `ANTHROPIC_API_KEY` · `SECRET_KEY` · `DATABASE_URL`
+See `.env.example` for the full list with descriptions.
 
 ---
 
-## Specs by module
+## Recent Changes
 
-| Module | Spec |
-|---|---|
-| {{MODULE}} | `specs/{{name}}.md` |
-
----
-
-## Latest changes
-
-_Auto-updated by scripts/update_context.py_
+_Auto-updated by scripts/update_docs.py_

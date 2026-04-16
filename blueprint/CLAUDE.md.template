@@ -1,5 +1,9 @@
 # CLAUDE.md — {{PROJECT_NAME}}
 
+## Start of every session
+
+**Read `CONTEXT.md` first.** It has the current state, architecture, key decisions, and what not to touch.
+
 ## Project context
 
 {{DESCRIPTION}}
@@ -10,55 +14,62 @@
    ```bash
    make quality
    ```
-   Which runs:
-   ```bash
-   .venv/bin/ruff check src/ tests/ main.py --fix
-   .venv/bin/ruff format src/ tests/ main.py
-   .venv/bin/mypy src/
-   .venv/bin/pytest tests/ -v
-   ```
 
-2. **If ruff errors:** fix them before finishing.
-3. **If mypy errors:** fix them or document why with `# type: ignore[...]`.
+2. **If linting errors:** fix them before finishing.
+3. **If type errors:** fix them or document why with a suppression comment.
 4. **If tests fail:** fix code or test as appropriate.
 
 ## Project structure
 
 ```
 {{PROJECT_NAME}}/
-├── CLAUDE.md              # this file
+├── CLAUDE.md              # this file — rules for Claude Code
 ├── CONTEXT.md             # living AI context (auto-updated)
+├── .blueprint             # blueprint config (LANG, version)
 ├── .claude/
-│   ├── constitution.md    # immutable principles
-│   └── commands/          # slash commands
-├── docs/                  # architecture docs
-├── specs/                 # feature specifications
+│   └── settings.json      # hooks: Stop → update_docs.py
+├── docs/
+│   ├── constitution/      # immutable principles (+ auto Project Status)
+│   ├── clarify/           # assumptions + open questions (+ auto Last Review)
+│   ├── estado-del-arte/   # product vision and market context
+│   ├── plan/              # technical plan + ADRs (+ auto Build Progress)
+│   ├── modular/           # module contracts
+│   ├── sdd/               # system design document
+│   └── specs/             # one spec per feature (with status markers)
 ├── src/                   # source code
 ├── tests/                 # test suite
-├── frontend/              # SvelteKit SPA
-└── scripts/               # automation scripts
+└── scripts/
+    ├── update_docs.py     # auto-updates all living docs
+    └── install_hooks.sh   # installs git hooks
 ```
 
 ## Code conventions
 
-- **Python 3.11+** — use match/case, modern typing (`list[str]` not `List[str]`)
-- **Max line length:** 100 characters
-- **Imports:** sorted by ruff (stdlib → third-party → local)
-- **Types:** annotate all public function parameters and returns
-- **Docstrings:** only on non-trivial functions, explain *why* not *what*
-- **No obvious comments:** `# increment i` is noise; `# módulo 11 per SII Chile` is value
+- Follow the idioms of the project's primary language
+- Max line length: 100 characters
+- Annotate all public function parameters and return types
+- Docstrings only on non-trivial functions — explain *why*, not *what*
+- No obvious comments. Explain intent when it's not evident from the code
 
 ## Document decisions
 
 When adding a new feature:
-1. If it changes architecture → update `docs/plan/v1-mvp.md` with an ADR
-2. If it changes validation behavior → update the spec in `specs/`
+1. If it changes architecture → add an ADR to `docs/plan/v1-mvp.md`
+2. If it's a new feature → write the spec in `docs/specs/<name>.md` **before** coding
 3. If it adds a slash command → create `.claude/commands/<name>.md`
+
+## Living docs (auto-updated after every commit and session)
+
+| Doc | Auto-updated section |
+|---|---|
+| `CONTEXT.md` | `## Recent Changes` |
+| `docs/constitution/constitution.md` | `## Project Status` |
+| `docs/clarify/assumptions.md` | `## Last Review` |
+| `docs/plan/v1-mvp.md` | `## Build Progress` |
+| `docs/specs/*.md` | `<!-- status: ... -->` marker |
+
+**Never manually edit these sections** — they will be overwritten on the next commit.
 
 ## Required environment variables
 
-```bash
-ANTHROPIC_API_KEY=sk-ant-...   # required
-```
-
-See `.env.example` for full list.
+See `.env.example` for the full list with descriptions.

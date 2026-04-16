@@ -1,10 +1,12 @@
-# AI App Blueprint
+# AI App Blueprint v2
 
-> Build functional, stable and scalable AI apps with Claude Code — without losing context between sessions.
+> Build functional, stable, and scalable apps with Claude Code — without losing context between sessions.
 
 **The problem:** Every new Claude Code session starts from zero. You spend the first 20% of your tokens re-explaining what the project does, what decisions were made, what not to touch. That's wasted money and time.
 
-**The solution:** A blueprint that makes your repo self-documenting for AI. Claude reads `CONTEXT.md` at the start of every session and knows everything — architecture, decisions, constraints, what's done and what's next.
+**The solution:** A blueprint that makes your entire repo self-documenting for AI. Claude reads `CONTEXT.md` and all living docs at the start of every session and knows everything — architecture, decisions, constraints, what's done and what's next.
+
+**The concept:** [Structured Vibe Coding](#structured-vibe-coding) — the speed and freedom of vibecoding, with structure that builds and documents itself.
 
 ---
 
@@ -16,36 +18,36 @@ ai-app-blueprint/
 ├── PHILOSOPHY.md                ← why this blueprint exists
 │
 ├── blueprint/                   ← copy these to your project
-│   ├── CONTEXT.md.template      ← living context for AI (auto-updated)
+│   ├── CONTEXT.md.template      ← living context (auto-updated)
 │   ├── CLAUDE.md.template       ← project rules for Claude Code
-│   ├── Makefile.template        ← standardized commands
+│   ├── Makefile.template        ← standardized quality commands
 │   ├── .env.example.template    ← env vars documented
 │   └── docs/
 │       ├── estado-del-arte/     ← product vision (what, for whom, why)
-│       ├── constitution/        ← immutable principles
-│       ├── plan/                ← technical decisions + ADRs
+│       ├── constitution/        ← principles (+ auto Project Status)
+│       ├── plan/                ← technical decisions + ADRs (+ auto Build Progress)
 │       ├── specs/               ← one spec per feature, written before code
-│       ├── clarify/             ← assumptions documented upfront
+│       │   └── _spec.template.md ← spec template with status marker
+│       ├── clarify/             ← assumptions (+ auto Last Review)
 │       ├── modular/             ← module map + contracts
 │       └── sdd/                 ← system design document
 │
 ├── scripts/
-│   ├── update_context.py        ← auto-updates CONTEXT.md after each commit
+│   ├── update_docs.py           ← auto-updates ALL living docs after each commit
 │   ├── install_hooks.sh         ← installs git hooks (run once after clone)
 │   └── bootstrap.sh             ← full project bootstrapper
 │
 ├── github/
-│   ├── workflows/ci.yml         ← ruff + mypy + pytest on every push
+│   ├── workflows/ci.yml         ← quality gate on every push
 │   └── PULL_REQUEST_TEMPLATE.md
 │
 ├── commands/
 │   └── bootstrap-app.md        ← Claude Code global command (/bootstrap-app)
 │
 └── examples/
-    └── idfy/                    ← real-world reference implementation
+    ├── idfy/                    ← IDfy Validate + Hipotecario (idfy.cl)
+    └── bookia/                  ← Bookia (bookia.cl)
 ```
-
-> **`docs/specs/`** is where spec-driven development lives. One markdown file per feature, written *before* coding. Claude implements the spec; the spec is the source of truth. See [SpecKit pattern](#speckit--spec-driven-development).
 
 ---
 
@@ -57,101 +59,120 @@ ai-app-blueprint/
 git clone https://github.com/pacman-db/ai-app-blueprint
 cd ai-app-blueprint
 
-# 2. Bootstrap your project
+# 2. Bootstrap your project (English, default)
 bash scripts/bootstrap.sh my-app-name
 
-# 3. Install auto-context hooks
-cd my-app-name
-bash scripts/install_hooks.sh
+# 3. Bootstrap in Spanish
+bash scripts/bootstrap.sh mi-app --lang es
 
 # 4. Open in Claude Code and start building
-# CONTEXT.md will auto-update after every session and commit
+# All living docs will auto-update after every session and commit
 ```
 
 ### Option B — Existing project
 ```
-# In your Claude Code session, tell Claude:
+# In your Claude Code session:
 Read this file and adapt it to our existing project:
 /path/to/ai-app-blueprint/commands/bootstrap-app.md
 ```
 
 ### Option C — Claude Code global command
 ```bash
-# Copy the global command
 cp commands/bootstrap-app.md ~/.claude/commands/
-
-# Then in any Claude Code session:
-/bootstrap-app
+# Then in any Claude Code session: /bootstrap-app
 ```
 
 ---
 
-## The Core Idea: CONTEXT.md as AI Memory
+## How it works: all living docs auto-update
 
 ```
-Session 1: Claude builds feature X
-    → commit → post-commit hook fires
-    → update_context.py runs:
-         reads last 8 commits
-         classifies by type (feat/fix/docs/infra)
-         updates "## Últimos cambios" section
-         lists top modified files
-    → CONTEXT.md updated in seconds
+You commit a feature
+    │
+    ▼ post-commit hook fires
+    │
+    ▼ scripts/update_docs.py runs:
+    │   ✓ CONTEXT.md          → ## Recent Changes  (last 8 commits classified)
+    │   ✓ constitution.md     → ## Project Status  (phase, feature count)
+    │   ✓ assumptions.md      → ## Last Review     (staleness warning if needed)
+    │   ✓ plan/v1-mvp.md      → ## Build Progress  (total commits, features shipped)
+    │   ✓ specs/*.md          → <!-- status -->    (in-progress / pending)
+    │
+    ▼ Same happens when Claude Code session ends (Stop hook)
 
-Session 2: Claude reads CONTEXT.md (first thing)
-    → knows everything from session 1
-    → zero tokens re-explaining
-    → starts working immediately
-
-Session N: CONTEXT.md has full project history
-    → new developer (human or AI) onboards in minutes
+Next session: Claude reads the docs → full context → starts working immediately
 ```
 
-**`update_context.py` never overwrites the full file** — it surgically replaces only the `## Últimos cambios` section using regex. Your architecture docs, decisions, and module map stay intact.
-
-**Result:** Each session starts with zero re-explaining — Claude reads the file and works immediately.
+**Key design principles of `update_docs.py`:**
+- Never overwrites a full file — surgical section replacement only
+- Creates stub docs automatically for greenfield projects (no doc = no problem)
+- Language-aware: set `BLUEPRINT_LANG=es` in `.blueprint` config for Spanish labels
+- Detects project phase: Exploratory (<20 commits) vs Stable (≥20 commits)
 
 ---
 
-## Stack (default)
+## Language support
+
+Set language in `.blueprint` (created by `bootstrap.sh`):
+```
+BLUEPRINT_LANG=es   # Spanish auto-updated sections
+BLUEPRINT_LANG=en   # English (default)
+```
+
+Or pass `--lang es` when bootstrapping:
+```bash
+bash scripts/bootstrap.sh mi-proyecto --lang es
+```
+
+**What's language-aware:** All auto-updated section headers and labels.
+**What's not:** The static content of your docs — you write those in whatever language you want.
+
+---
+
+## Structured Vibe Coding
+
+This blueprint formalizes what we call **Structured Vibe Coding**:
+
+| Traditional vibecoding | Structured Vibe Coding |
+|---|---|
+| Fast, but context evaporates | Fast, and context persists |
+| AI re-opens settled decisions | AI reads ADRs, doesn't re-open them |
+| Docs written once, never updated | Docs auto-update after every commit |
+| Works for greenfield, breaks as project grows | Works for greenfield and scales as it grows |
+| Session 1 and session 50 feel the same | Session 50 starts with full project history |
+
+**The cycle:**
+1. Human arrives with an idea
+2. Blueprint structures everything (`/bootstrap-app`)
+3. Human + AI design together (constitution, specs, ADRs)
+4. AI implements — guided by specs
+5. AI verifies — quality gate passes
+6. Docs update themselves — hooks fire after every commit and session
+7. Next session: Claude reads the docs and starts in 30 seconds
+
+---
+
+## Suggested stack
+
+This blueprint is **stack-agnostic** — it works with any language or framework.
+The following is the recommended default for full-stack AI apps:
 
 | Layer | Technology | Why |
 |---|---|---|
-| Backend | Python 3.11 + FastAPI | Typed, async, OpenAPI auto-generated |
+| Backend | Python 3.11+ · FastAPI | Typed, async, OpenAPI auto-generated |
 | Frontend | SvelteKit | Minimal bundle, Svelte 5 reactivity, full-stack capable |
-| Database | PostgreSQL + SQLAlchemy | Reliable, great for complex queries |
-| Auth | Firebase Auth | Google/Microsoft SSO, no custom auth |
-| Payments | Reveniu (CLP) / Stripe | Native currency support |
-| Deploy | Railway | Managed PostgreSQL + app, zero ops |
+| Database | PostgreSQL + SQLAlchemy | Reliable, complex queries, easy migrations |
+| Auth | Firebase Auth | Google/Microsoft SSO, no custom auth plumbing |
+| Payments | Stripe · Reveniu (LATAM) | Stripe for global, Reveniu for local currency |
+| Deploy | Railway | Managed PostgreSQL + app in one place, zero ops |
 | AI | Claude API (Anthropic) | Haiku for cheap tasks, Sonnet for analysis |
-| Quality | ruff + mypy + pytest | No exceptions |
+| Quality | ruff · mypy · pytest | Linting + types + tests — no exceptions |
 
-> **SvelteKit as full-stack:** For simple apps (no complex background jobs), SvelteKit server routes (`+server.ts`) can replace FastAPI entirely — one repo, one deploy. Use FastAPI when you need Python-specific libraries (ML, data processing, Claude SDK async pipelines).
+> **SvelteKit as full-stack:** For simpler apps, SvelteKit server routes (`+server.ts`) can replace a separate backend entirely — one repo, one deploy. Use a dedicated backend when you need language-specific libraries (ML, data processing, Claude SDK async pipelines) or a strict API contract.
 
 ---
 
-## Architecture & Development Patterns
-
-### DDD Lite — modules with contracts
-
-Each module owns its domain. Modules communicate through Pydantic models, not internal imports:
-
-```
-src/
-├── auth/       → owns users, sessions, api_keys
-├── products/
-│   ├── validator/  → owns validation pipeline
-│   └── hipotecario/ → owns mortgage calculation
-│       ├── evaluator.py    → core logic
-│       ├── policies/       → one file per bank/entity
-│       │   ├── base.py     → BasePolicy contract
-│       │   ├── registry.py → ACTIVE_POLICIES list
-│       │   └── banco_x.py  → BancoXPolicy(BasePolicy)
-│       └── models.py       → Pydantic input/output
-└── api/        → FastAPI routes only, no business logic
-```
-
-**The rule:** `api/` calls `products/`, `products/` calls `auth/` and `models/`. No cross-product imports.
+## Architecture patterns
 
 ### Spec-first → then code
 
@@ -160,128 +181,98 @@ docs/specs/feature-name.md   ← write this first
     → defines: inputs, outputs, edge cases, cost constraints
 
 Claude reads spec → implements exactly that
-    → no guessing, no scope creep, no "I thought you meant..."
+    → no guessing, no scope creep
 ```
+
+### Modules with contracts (DDD Lite)
+
+```
+src/
+├── auth/           → owns identity, sessions, api_keys
+├── products/
+│   ├── feature_a/  → owns its domain, exposes typed outputs
+│   └── feature_b/  → evaluator + policy pattern
+│       ├── evaluator.py    → core logic
+│       ├── policies/       → one file per variant/entity
+│       │   ├── base.py     → BasePolicy contract
+│       │   ├── registry.py → ACTIVE_POLICIES
+│       │   └── variant_x.py
+│       └── models.py       → Pydantic input/output types
+└── api/            → routes only, no business logic
+```
+
+**The rule:** `api/` calls `products/`, `products/` calls `auth/` and `models/`. No cross-product imports.
+
+### Cost-proportional AI pipeline
+
+```
+Input received
+    │
+    ▼ Layer 1: Local validation          Cost: $0.00
+    ▼ Layer 2: Cheap AI precheck         Cost: ~$0.001
+    ▼ Layer 3: Full AI analysis          Cost: ~$0.025
+```
+
+Each layer only runs if the previous one passed. Reject bad input early, pay for AI only when needed.
 
 ### ADRs — decisions that don't get re-opened
 
 ```
 docs/plan/v1-mvp.md
-    ADR-001: FastAPI over Flask (typing, async, auto-OpenAPI)
+    ADR-001: Why X over Y (context + decision + consequences)
     ADR-002: Modular monolith over microservices (small team)
-    ADR-003: Haiku precheck before Sonnet (cost proportional to risk)
+    ADR-003: Cheap precheck before expensive AI call (cost)
 ```
 
-Claude reads ADRs → doesn't suggest Flask, doesn't propose microservices, doesn't skip the precheck.
-
-### 4-layer AI pipeline (cost-proportional)
-
-```
-Input received
-    │
-    ▼ Layer 1: Format/size validation       Cost: $0.00
-    ▼ Layer 2: Local pixel analysis (Pillow) Cost: $0.00
-    ▼ Layer 3: Claude Haiku precheck        Cost: ~$0.001
-    ▼ Layer 4: Claude Sonnet full analysis  Cost: ~$0.025
-```
-
-**Each layer only runs if the previous one passed.** Reject obvious bad inputs early, pay for AI only when needed.
-
-### Error handling — 3 levels
-
-```python
-# Level 1: Validation errors (client mistake) → 400
-raise HTTPException(status_code=400, detail="Invalid format")
-
-# Level 2: Business rule errors (expected failure) → structured response
-return PolicyResult(aprobado=False, razon="Income below minimum")
-
-# Level 3: Unexpected errors → 500 + log
-logger.exception("Unexpected error in pipeline")
-raise HTTPException(status_code=500, detail="Internal error")
-```
-
-Never let Level 3 silently swallow Level 1 or 2.
+Claude reads ADRs → doesn't suggest the alternative you already ruled out.
 
 ---
 
-## SpecKit — Spec-Driven Development
-
-**Write the spec before you write the code.**
-
-```markdown
-# specs/document-validation.md
-
-## Input
-- Image file: JPEG/PNG/HEIC, max 10MB
-- Accepted document types: cédula_frontal, cédula_reverso, pasaporte
-
-## Validation layers
-1. Format check: reject if not image, >10MB, or 0 bytes
-2. Pixel analysis: reject if >95% uniform color (screenshot/blank)
-3. Haiku precheck: "Is this a Chilean identity document? yes/no"
-4. Sonnet analysis: full structured extraction
-
-## Output
-{ "valid": bool, "confidence": float, "reason": str, "extracted": {...} }
-
-## Edge cases
-- Photocopies: usually pass layer 1-2, Haiku rejects ~90%
-- Screenshots: rejected at layer 2 (uniform background)
-- Expired documents: valid=true, flagged in extracted.expired
-```
-
-The spec is the contract. Claude implements it. If the implementation diverges from the spec, the spec wins.
-
----
-
-## Claude Code Skills (recommended)
-
-Install these global skills to get senior-level code review on every task:
-
-```bash
-# Copy to your global Claude Code commands directory
-cp commands/bootstrap-app.md ~/.claude/commands/
-
-# Or create your own:
-# ~/.claude/commands/senior-backend.md  → backend architecture review
-# ~/.claude/commands/senior-frontend.md → frontend/UX review
-```
-
-**How to use in a session:**
-```
-/senior-backend   → reviews API design, DB schema, security, performance
-/senior-frontend  → reviews component structure, UX patterns, accessibility
-/bootstrap-app    → sets up full project structure from scratch
-```
-
-Skills give Claude a defined persona with specific expertise. A "senior backend" skill makes Claude think about edge cases, security, and performance — not just "make it work."
-
----
-
-## Blueprint Stages
+## Blueprint stages
 
 ```
-Estado del Arte    → What problem, for whom, why now
-Constitution       → Immutable principles (never violate these)
-Plan / ADRs        → Technical decisions and why they were made
-Clarify            → Assumptions documented before coding
+Estado del Arte    → Problem, for whom, why now
+Constitution       → Immutable principles (+ auto Project Status)
+Plan / ADRs        → Technical decisions and rationale (+ auto Build Progress)
+Clarify            → Assumptions documented before coding (+ auto Last Review)
 Modular Design     → Clear contracts between modules
-Specs              → One spec per feature, before writing code  ← SpecKit
+Specs              → One spec per feature, before writing code (+ auto status marker)
 SDD                → System design document
 Development        → Code that implements specs
-Quality            → ruff + mypy + pytest (automated via CI)
-Tests              → Unit + integration, no mocks on critical paths
+Quality            → Linting + types + tests (automated via CI)
 GitHub / CI        → Auto-quality gate on every push
 Deployment         → Reproducible, documented, automated
-CONTEXT.md         → Living memory updated after every session
+CONTEXT.md         → Living memory, updated after every session and commit
 ```
+
+---
+
+## Real-world examples
+
+### [idfy.cl](https://idfy.cl) — IDfy Validate + Hipotecario
+
+Chilean identity document validator + mortgage evaluator.
+Built entirely with this blueprint. Both products in production.
+
+- **Validate:** 4-layer AI pipeline (format → pixels → Haiku → Sonnet). 85% of bad inputs rejected before AI.
+- **Hipotecario:** Rule-based mortgage evaluator with per-bank policy pattern. 5 entities active.
+- **Pattern demonstrated:** Policy pattern, cost-proportional pipeline, B2B API keys, unified payment webhook.
+
+→ [Full example](examples/idfy/)
+
+---
+
+### [bookia.cl](https://bookia.cl) — Bookia
+
+SaaS platform built with the same blueprint in a different domain.
+
+→ [Full example](examples/bookia/)
 
 ---
 
 ## Philosophy
 
-> The developer who masters this workflow builds 5x faster without sacrificing quality or stability.
+> The best repos are self-documenting. The best AI-assisted repos are self-documenting *for AI*.
 
 Traditional blueprints are written for human teams. This one is designed for **human + AI collaboration**:
 
@@ -290,26 +281,9 @@ Traditional blueprints are written for human teams. This one is designed for **h
 3. **CONTEXT.md** — eliminates the "re-explain everything" tax at the start of each session
 4. **Modular contracts** — Claude knows exactly what each module does and what it can't touch
 5. **ADRs** — Claude doesn't re-open decisions that were already made and documented
-
-Vibecoding works. This blueprint makes it **reliable.**
+6. **Auto-update hooks** — all living docs stay current without manual work
 
 → [Read the full philosophy](PHILOSOPHY.md)
-
----
-
-## Real-world example
-
-[examples/idfy/](examples/idfy/) — IDfy is a Chilean identity document validator built entirely with this blueprint. It processes real documents in production, uses the 4-layer AI pipeline, policy pattern, and CONTEXT.md auto-update. Every pattern in this blueprint was extracted from that experience.
-
----
-
-## Integrations
-
-- **GitHub Actions** — CI runs automatically on every push/PR
-- **SpecKit pattern** — spec-driven development: write the spec (`docs/specs/`) before the code
-- **Claude Code hooks** — Stop hook updates context when session ends
-- **Git hooks** — post-commit updates context after every commit
-- **Railway** — push-to-deploy with managed PostgreSQL
 
 ---
 

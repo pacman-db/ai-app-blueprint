@@ -270,7 +270,7 @@ Claude reads ADRs → doesn't suggest the alternative you already ruled out.
 ## Blueprint stages
 
 ```
-Estado del Arte    → Problem, for whom, why now
+Product Vision     → Problem, for whom, why now
 Constitution       → Immutable principles (+ auto Project Status)
 Plan / ADRs        → Technical decisions and rationale (+ auto Build Progress)
 Clarify            → Assumptions documented before coding (+ auto Last Review)

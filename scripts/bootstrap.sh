@@ -62,7 +62,7 @@ find . -name "*.md" -not -path "./.git/*" | xargs sed -i '' \
   "s/{{PROJECT_NAME}}/$PROJECT_NAME/g; s/{{DATE}}/$DATE/g" 2>/dev/null || true
 
 # ── Create base directory structure ───────────────────────────────────────────
-mkdir -p docs/specs docs/estado-del-arte docs/constitution docs/clarify
+mkdir -p docs/specs docs/vision docs/constitution docs/clarify
 mkdir -p docs/plan docs/modular docs/sdd
 mkdir -p tests observability
 mkdir -p .claude/commands

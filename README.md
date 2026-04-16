@@ -23,7 +23,7 @@ ai-app-blueprint/
 │   ├── Makefile.template        ← standardized quality commands
 │   ├── .env.example.template    ← env vars documented
 │   └── docs/
-│       ├── estado-del-arte/     ← product vision (what, for whom, why)
+│       ├── vision/              ← product vision (what, for whom, why)
 │       ├── constitution/        ← principles (+ auto Project Status)
 │       ├── plan/                ← technical decisions + ADRs (+ auto Build Progress)
 │       ├── specs/               ← one spec per feature, written before code
@@ -84,6 +84,43 @@ cp commands/bootstrap-app.md ~/.claude/commands/
 
 ---
 
+## Greenfield support — docs that start from zero
+
+This is the key differentiator from SpecKit and other spec-driven approaches.
+
+**Traditional blueprints assume you arrive with docs ready.** You define the constitution, write the specs, then code. That works for well-understood products.
+
+**This blueprint works when you have nothing.** Start with just an idea — `update_docs.py` creates the missing docs as stubs on the first commit and fills them in as the project evolves.
+
+```
+Day 1 — first commit, no docs exist
+    │
+    ▼ update_docs.py runs for the first time:
+    │   + constitution.md created  (3 generic principles, Phase: Exploratory)
+    │   + assumptions.md created   (placeholder table)
+    │   + plan/v1-mvp.md created   (empty ADR section)
+    │   CONTEXT.md already exists  (you filled it in manually)
+
+Week 2 — 15 commits in, idea still mutating
+    │
+    ▼ update_docs.py after every commit:
+    │   ✓ constitution.md  → Phase: Exploratory (15 commits)
+    │   ✓ assumptions.md   → Last Review updated
+    │   ✓ plan/v1-mvp.md   → Build Progress: 4 features, 6 fixes
+    │   ✓ specs/*.md       → in-progress markers on active specs
+
+Month 2 — 50 commits, core design settled
+    │
+    ▼ update_docs.py:
+    │   ✓ constitution.md  → Phase: Stable (50 commits)
+    │   ✓ assumptions.md   → ⚠️ Not updated in 30 commits — review it
+    │   ✓ Everything else  → auto-updated as usual
+```
+
+The docs don't require upfront discipline. They start minimal and grow with the product. By the time the project stabilizes, the documentation is already there.
+
+---
+
 ## How it works: all living docs auto-update
 
 ```
@@ -105,7 +142,7 @@ Next session: Claude reads the docs → full context → starts working immediat
 
 **Key design principles of `update_docs.py`:**
 - Never overwrites a full file — surgical section replacement only
-- Creates stub docs automatically for greenfield projects (no doc = no problem)
+- Creates stub docs for any missing file — greenfield ready from commit 1
 - Language-aware: set `BLUEPRINT_LANG=es` in `.blueprint` config for Spanish labels
 - Detects project phase: Exploratory (<20 commits) vs Stable (≥20 commits)
 
@@ -163,12 +200,14 @@ The following is the recommended default for full-stack AI apps:
 | Frontend | SvelteKit | Minimal bundle, Svelte 5 reactivity, full-stack capable |
 | Database | PostgreSQL + SQLAlchemy | Reliable, complex queries, easy migrations |
 | Auth | Firebase Auth | Google/Microsoft SSO, no custom auth plumbing |
-| Payments | Stripe · Reveniu (LATAM) | Stripe for global, Reveniu for local currency |
+| Payments | Stripe | Global coverage, excellent DX |
 | Deploy | Railway | Managed PostgreSQL + app in one place, zero ops |
 | AI | Claude API (Anthropic) | Haiku for cheap tasks, Sonnet for analysis |
 | Quality | ruff · mypy · pytest | Linting + types + tests — no exceptions |
 
 > **SvelteKit as full-stack:** For simpler apps, SvelteKit server routes (`+server.ts`) can replace a separate backend entirely — one repo, one deploy. Use a dedicated backend when you need language-specific libraries (ML, data processing, Claude SDK async pipelines) or a strict API contract.
+
+> **Local payment providers:** Stripe works globally. If you need local currency support (LATAM, etc.), drop in your regional provider — the blueprint doesn't prescribe one.
 
 ---
 
@@ -248,6 +287,9 @@ CONTEXT.md         → Living memory, updated after every session and commit
 ---
 
 ## Real-world examples
+
+> Both examples are the blueprint author's own products — not a geographic limitation.
+> The blueprint works with any stack, language, and market.
 
 ### [idfy.cl](https://idfy.cl) — IDfy Validate + Hipotecario
 

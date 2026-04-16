@@ -31,7 +31,7 @@
 ├── docs/
 │   ├── constitution/      # immutable principles (+ auto Project Status)
 │   ├── clarify/           # assumptions + open questions (+ auto Last Review)
-│   ├── estado-del-arte/   # product vision and market context
+│   ├── vision/            # product vision and market context
 │   ├── plan/              # technical plan + ADRs (+ auto Build Progress)
 │   ├── modular/           # module contracts
 │   ├── sdd/               # system design document

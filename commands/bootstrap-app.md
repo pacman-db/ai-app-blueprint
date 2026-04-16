@@ -37,7 +37,7 @@ Create exactly this structure before writing any code:
 ├── Makefile
 │
 ├── docs/
-│   ├── estado-del-arte/
+│   ├── vision/
 │   │   └── product-vision.md    # what, for whom, why now
 │   ├── constitution/
 │   │   └── constitution.md      # immutable principles (+ auto Project Status)

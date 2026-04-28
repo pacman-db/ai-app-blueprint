@@ -1,9 +1,9 @@
-# IDfy — Real-world reference implementation
+# Igris — Real-world reference implementation
 
-IDfy is a Chilean identity document validator built entirely with this blueprint.
+Igris is a Chilean identity document validator built entirely with this blueprint.
 It validates cédulas de identidad (national ID cards) using Claude Vision API.
 
-> Every pattern in the AI App Blueprint was extracted from building IDfy in production.
+> Every pattern in the AI App Blueprint was extracted from building Igris in production.
 
 ---
 
@@ -106,7 +106,7 @@ Claude reads CONTEXT.md (auto-loaded)
 
 ## Blueprint elements used
 
-| Blueprint element | IDfy implementation | Result |
+| Blueprint element | Igris implementation | Result |
 |---|---|---|
 | `CONTEXT.md` + hooks | Auto-updated every commit + session end | Zero re-explaining |
 | `CLAUDE.md` | Enforces ruff + mypy + pytest | No broken code reaches main |

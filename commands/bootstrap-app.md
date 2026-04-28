@@ -1,7 +1,31 @@
+---
+name: bootstrap-app
+description: Bootstrap a new app with Structured Vibe Coding — generates constitution, vision, ADRs, specs and living docs from a single idea. Use when starting any new project from scratch.
+---
+
 # Bootstrap — New AI App
 
 You are the architect of this project. Follow this blueprint exactly.
 The goal: a functional, stable, and scalable app from the first commit.
+
+---
+
+## Step 0 — Understand the idea
+
+Before creating anything, ask the user:
+
+"What app do you want to build? Describe it in one or two sentences."
+
+Wait for their answer. Then use that description to:
+- Name the project (slug format, e.g. `meeting-to-tasks`)
+- Fill `CONTEXT.md` with the real problem, not placeholders
+- Write `docs/vision/product-vision.md` adapted to that idea
+- Write `docs/constitution/constitution.md` with principles that make sense for that domain
+- Write `docs/plan/v1-mvp.md` with ADRs relevant to that stack and problem
+- Write `docs/clarify/assumptions.md` with real open questions for that product
+
+Do not proceed to Step 1 until you have a real idea from the user.
+Do not use generic placeholders anywhere — every doc must reflect the actual project.
 
 ---
 

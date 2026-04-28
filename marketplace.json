@@ -1,0 +1,11 @@
+{
+  "name": "ai-app-blueprint",
+  "owner": { "name": "pacman-db" },
+  "plugins": [
+    {
+      "name": "ai-app-blueprint",
+      "source": ".",
+      "description": "Structured Vibe Coding — bootstrap any app from a single idea"
+    }
+  ]
+}

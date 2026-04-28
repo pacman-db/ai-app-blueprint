@@ -1,12 +1,20 @@
-# AI App Blueprint v2
+# AI App Blueprint
 
-> Build functional, stable, and scalable apps with Claude Code — without losing context between sessions.
+Stop re-explaining your project to Claude every session.
 
-**The problem:** Every new Claude Code session starts from zero. You spend the first 20% of your tokens re-explaining what the project does, what decisions were made, what not to touch. That's wasted money and time.
+This blueprint makes your repo self-documenting for AI —
+architecture, decisions, constraints, what's done and what's next.
+Claude reads it at the start of every session and starts working in 30 seconds.
 
-**The solution:** A blueprint that makes your entire repo self-documenting for AI. Claude reads `CONTEXT.md` and all living docs at the start of every session and knows everything — architecture, decisions, constraints, what's done and what's next.
+## Quickstart
 
-**The concept:** [Structured Vibe Coding](#structured-vibe-coding) — the speed and freedom of vibecoding, with structure that builds and documents itself.
+```bash
+git clone https://github.com/pacman-db/ai-app-blueprint
+cp commands/bootstrap-app.md ~/.claude/commands/
+
+# Then in any Claude Code session:
+/bootstrap-app
+```
 
 ---
 
@@ -45,7 +53,7 @@ ai-app-blueprint/
 │   └── bootstrap-app.md        ← Claude Code global command (/bootstrap-app)
 │
 └── examples/
-    ├── idfy/                    ← IDfy Validate + Hipotecario (idfy.cl)
+    ├── task-manager/            ← Example output: task manager app
     └── bookia/                  ← Bookia (bookia.cl)
 ```
 
@@ -291,7 +299,7 @@ CONTEXT.md         → Living memory, updated after every session and commit
 > Both examples are the blueprint author's own products — not a geographic limitation.
 > The blueprint works with any stack, language, and market.
 
-### [idfy.cl](https://idfy.cl) — IDfy Validate + Hipotecario
+### [igris.cl](https://igris.cl) — Igris Validate + Hipotecario
 
 Chilean identity document validator + mortgage evaluator.
 Built entirely with this blueprint. Both products in production.
@@ -300,7 +308,9 @@ Built entirely with this blueprint. Both products in production.
 - **Hipotecario:** Rule-based mortgage evaluator with per-bank policy pattern. 5 entities active.
 - **Pattern demonstrated:** Policy pattern, cost-proportional pipeline, B2B API keys, unified payment webhook.
 
-→ [Full example](examples/idfy/)
+### Generic example — task manager
+
+→ [See bootstrap output](examples/task-manager/)
 
 ---
 

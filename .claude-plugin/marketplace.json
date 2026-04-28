@@ -4,8 +4,12 @@
   "plugins": [
     {
       "name": "ai-app-blueprint",
-      "source": ".",
-      "description": "Structured Vibe Coding — bootstrap any app from a single idea"
+      "source": {
+        "source": "github",
+        "repo": "pacman-db/ai-app-blueprint"
+      },
+      "description": "Structured Vibe Coding — bootstrap any app from a single idea",
+      "strict": false
     }
   ]
 }

@@ -12,11 +12,16 @@ The goal: a functional, stable, and scalable app from the first commit.
 
 ## Step 0 — Understand the idea
 
-Before creating anything, ask the user:
+Before creating anything, ask the user two questions and wait for both answers before generating anything:
 
-"What app do you want to build? Describe it in one or two sentences."
+**Question 1:** "What app do you want to build? Describe it in one or two sentences."
 
-Wait for their answer. Then use that description to:
+**Question 2:** "What stack do you prefer?
+1. SvelteKit full-stack (frontend + backend in one repo, server routes as API) — recommended for most projects
+2. SvelteKit + FastAPI separate (when you need Python pipelines, ML, or async Claude SDK)
+3. Other (describe it)"
+
+Wait for both answers. Then use them to:
 - Name the project (slug format, e.g. `meeting-to-tasks`)
 - Fill `CONTEXT.md` with the real problem, not placeholders
 - Write `docs/vision/product-vision.md` adapted to that idea
@@ -24,8 +29,13 @@ Wait for their answer. Then use that description to:
 - Write `docs/plan/v1-mvp.md` with ADRs relevant to that stack and problem
 - Write `docs/clarify/assumptions.md` with real open questions for that product
 
-Do not proceed to Step 1 until you have a real idea from the user.
+Do not proceed to Step 1 until you have both answers from the user.
 Do not use generic placeholders anywhere — every doc must reflect the actual project.
+
+**Stack rules:**
+- If option 1 (SvelteKit full-stack): never mention FastAPI, uvicorn, Python backend, or requirements.txt. Use SvelteKit server routes (`+server.ts`) as the API layer.
+- If option 2 (SvelteKit + FastAPI): generate both repos with a clear API contract between them.
+- If option 3: adapt the blueprint to the described stack.
 
 ---
 
@@ -56,7 +66,13 @@ Create exactly this structure before writing any code:
 ├── CLAUDE.md                    # Claude Code rules + context pointer
 ├── CONTEXT.md                   # living AI context (auto-updated)
 ├── .blueprint                   # config: BLUEPRINT_LANG, PROJECT_NAME
-├── .env.example                 # documented env vars (never .env in git)
+├── .env.example                 # documented env vars — include at minimum:
+│                                #   ANTHROPIC_API_KEY=
+│                                #   DATABASE_URL=
+│                                #   # Dev mode — bypasses Firebase/Google auth for local testing
+│                                #   DEV_MODE=false
+│                                #   DEV_USER_EMAIL=dev@local.dev
+│                                #   DEV_USER_NAME=Developer
 ├── .gitignore
 ├── Makefile
 │
@@ -130,6 +146,9 @@ bash scripts/install_hooks.sh
 ## Step 3 — Quality gate (Makefile)
 
 ```makefile
+install-dev:
+	pip install -r requirements.txt -r requirements-dev.txt  # adapt to stack
+
 quality:
 	.venv/bin/ruff check src/ tests/ main.py --fix
 	.venv/bin/ruff format src/ tests/ main.py
@@ -137,7 +156,7 @@ quality:
 	.venv/bin/pytest tests/ -v
 
 dev:
-	.venv/bin/uvicorn main:app --reload
+	.venv/bin/uvicorn main:app --reload  # adapt to stack (e.g. npm run dev)
 
 test:
 	.venv/bin/pytest tests/ -v
@@ -213,6 +232,19 @@ _Auto-updated by scripts/update_docs.py_
 
 ---
 
+## Before the final summary — ask the user
+
+"Do you want to start the project locally now?
+1. Yes — install dependencies and start the server
+2. Yes + Railway — start local and configure deploy
+3. Not yet"
+
+- If **1**: run `make install-dev && make dev`
+- If **2**: run `make install-dev && make dev`, then `railway login && railway init && railway up`
+- If **3**: continue without starting
+
+---
+
 ## Rules always active
 
 1. **Before finishing any task:** `make quality` must pass
@@ -222,6 +254,29 @@ _Auto-updated by scripts/update_docs.py_
 5. **Each commit:** all living docs update automatically (post-commit hook)
 6. **Never commit `.env`** — only `.env.example` with descriptions
 7. **No tests, no merge**
+8. **After bootstrap you can keep iterating** — write "iterate and improve" so Claude reviews `docs/`, completes empty stubs, improves existing specs, and runs `scripts/update_docs.py`
+9. **After each commit you make, hooks update all docs automatically** — you don't need to do it manually
+
+---
+
+## Final summary block — always print this at the end
+
+```
+---
+✅ Bootstrap complete.
+
+To continue, write any of these:
+→ "continue with recommended" — Claude reads CONTEXT.md and knows what comes next
+→ "iterate and improve the product" — Claude reviews docs/ and completes what's missing
+→ "complete the docs and context files" — Claude runs scripts and fills empty stubs
+→ "update the docs" — Claude runs scripts/update_docs.py manually
+
+🔄 Docs update automatically after every commit and session (Stop hook active):
+- CONTEXT.md → recent changes
+- constitution.md → project status
+- plan/v1-mvp.md → build progress
+- specs/*.md → status of each spec
+```
 
 ---
 

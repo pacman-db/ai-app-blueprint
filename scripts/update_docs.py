@@ -161,7 +161,7 @@ def _replace_section(
     ]
     for header in candidates:
         escaped = re.escape(header.lstrip("# ").strip())
-        pattern = rf"(#{1,3} {escaped}.*?)(?=\n#{1,3} |\Z)"
+        pattern = rf"(#{{1,3}} {escaped}.*?)(?=\n#{{1,2}} |\Z)"
         m = re.search(pattern, content, re.DOTALL)
         if m:
             return content[: m.start()] + new_content + content[m.end() :]

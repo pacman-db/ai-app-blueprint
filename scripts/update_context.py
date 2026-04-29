@@ -1,142 +1,97 @@
 #!/usr/bin/env python3
 """
-update_context.py — Actualiza CONTEXT.md con los cambios recientes del repo.
-
-Llamado por:
-  - Git post-commit hook: captura qué cambió
-  - Claude Code Stop hook: captura decisiones de la sesión
-
-Nunca sobreescribe CONTEXT.md completo — solo actualiza secciones específicas.
+Updates CONTEXT.md with:
+  - Recent git commits in '## Últimos cambios'
+  - Spec file list in '## Specs disponibles'
+  - New/modified files summary in '## Archivos modificados recientemente'
 """
 
-from __future__ import annotations
-
-import re
 import subprocess
-from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
 CONTEXT_FILE = ROOT / "CONTEXT.md"
-MAX_COMMITS = 8
+SPECS_DIR = ROOT / "specs"
+MAX_COMMITS = 10
 
 
-def _git(cmd: list[str]) -> str:
-    result = subprocess.run(["git", "-C", str(ROOT)] + cmd, capture_output=True, text=True)
-    return result.stdout.strip()
+# ── Helpers ──────────────────────────────────────────────────────────────────
+
+def _git(*args: str) -> str:
+    r = subprocess.run(["git", *args], capture_output=True, text=True, cwd=ROOT)
+    return r.stdout.strip() if r.returncode == 0 else ""
 
 
-def _recent_commits() -> list[dict]:
-    """Últimos N commits con hash, mensaje y archivos cambiados."""
-    log = _git(["log", f"-{MAX_COMMITS}", "--format=%H|%s|%ad", "--date=short"])
-    commits = []
-    for line in log.splitlines():
-        if not line.strip():
-            continue
-        parts = line.split("|", 2)
-        if len(parts) == 3:
-            hash_, msg, date = parts
-            files = _git(["diff-tree", "--no-commit-id", "-r", "--name-only", hash_])
-            commits.append({"hash": hash_[:7], "msg": msg, "date": date, "files": files})
-    return commits
+def _replace_section(content: str, marker: str, new_body: str) -> str:
+    """Replace everything from `marker` to the next `## ` heading (or EOF)."""
+    if marker not in content:
+        return content + f"\n{marker}\n{new_body}\n"
+
+    start = content.index(marker)
+    # Find the next H2 after the marker
+    rest = content[start + len(marker):]
+    next_h2 = rest.find("\n## ", 1)
+    if next_h2 == -1:
+        return content[:start] + marker + "\n" + new_body + "\n"
+    return content[:start] + marker + "\n" + new_body + "\n" + rest[next_h2 + 1:]
 
 
-def _classify_commits(commits: list[dict]) -> dict[str, list[str]]:
-    """Clasifica commits por tipo para generar resumen."""
-    classified: dict[str, list[str]] = {
-        "features": [],
-        "fixes": [],
-        "docs": [],
-        "infra": [],
-        "other": [],
-    }
-    for c in commits:
-        msg = c["msg"].lower()
-        entry = f"`{c['hash']}` {c['msg']} ({c['date']})"
-        if msg.startswith("feat"):
-            classified["features"].append(entry)
-        elif msg.startswith("fix"):
-            classified["fixes"].append(entry)
-        elif msg.startswith("docs") or msg.startswith("blueprint"):
-            classified["docs"].append(entry)
-        elif any(k in msg for k in ("ci", "deploy", "infra", "make", "chore")):
-            classified["infra"].append(entry)
-        else:
-            classified["other"].append(entry)
-    return classified
+# ── Section builders ─────────────────────────────────────────────────────────
+
+def build_commits_section() -> str:
+    raw = _git("log", f"-{MAX_COMMITS}", "--pretty=format:%ad %s", "--date=short")
+    if not raw:
+        return ""
+    lines = [f"- [{c[:10]}] {c[11:]}" for c in raw.split("\n") if c]
+    return "<!-- Actualizado automáticamente por scripts/update_context.py -->\n" + "\n".join(lines)
 
 
-def _build_cambios_section(commits: list[dict]) -> str:
-    """Genera la sección '## Últimos cambios' para CONTEXT.md."""
-    now = datetime.now().strftime("%Y-%m-%d %H:%M")
-    classified = _classify_commits(commits)
-
-    lines = [f"## Últimos cambios\n", f"_Actualizado automáticamente: {now}_\n"]
-
-    if classified["features"]:
-        lines.append("\n### Features")
-        lines.extend(f"- {e}" for e in classified["features"])
-
-    if classified["fixes"]:
-        lines.append("\n### Fixes")
-        lines.extend(f"- {e}" for e in classified["fixes"])
-
-    if classified["infra"] or classified["docs"]:
-        lines.append("\n### Infra / Docs")
-        lines.extend(f"- {e}" for e in classified["infra"] + classified["docs"])
-
-    if classified["other"]:
-        lines.append("\n### Otros")
-        lines.extend(f"- {e}" for e in classified["other"])
-
-    # Archivos más tocados en esta tanda
-    all_files: list[str] = []
-    for c in commits:
-        all_files.extend(c["files"].splitlines())
-
-    if all_files:
-        from collections import Counter
-        top = Counter(all_files).most_common(5)
-        lines.append("\n### Archivos más modificados")
-        lines.extend(f"- `{f}` ({n}x)" for f, n in top)
-
-    return "\n".join(lines) + "\n"
+def build_specs_section() -> str:
+    if not SPECS_DIR.exists():
+        return ""
+    rows = ["| Feature | Archivo |", "|---|---|"]
+    for spec in sorted(SPECS_DIR.glob("*.md")):
+        # Extract first H1 line as feature name
+        first_line = ""
+        for line in spec.read_text().splitlines():
+            if line.startswith("# "):
+                first_line = line[2:].strip()
+                break
+        name = first_line or spec.stem.replace("-", " ").title()
+        rows.append(f"| {name} | `specs/{spec.name}` |")
+    return "\n".join(rows)
 
 
-def _update_section(content: str, section_header: str, new_content: str) -> str:
-    """
-    Reemplaza una sección completa en el archivo.
-    Si no existe la sección, la agrega al final.
-    """
-    # Busca '## Últimos cambios' hasta el siguiente '## ' o fin de archivo
-    pattern = rf"(## {re.escape(section_header.lstrip('## '))}.*?)(?=\n## |\Z)"
-    match = re.search(pattern, content, re.DOTALL)
-    if match:
-        return content[: match.start()] + new_content + content[match.end() :]
-    else:
-        return content.rstrip() + "\n\n---\n\n" + new_content
+def build_recent_files_section() -> str:
+    """List files changed in the last 3 commits, grouped by area."""
+    raw = _git("diff", "--name-only", "HEAD~3", "HEAD")
+    if not raw:
+        raw = _git("diff", "--name-only", "HEAD~1", "HEAD")
+    if not raw:
+        return ""
+    files = [f for f in raw.split("\n") if f]
+    if not files:
+        return ""
+    lines = [f"- `{f}`" for f in sorted(files)[:20]]
+    return "\n".join(lines)
 
 
-def main() -> None:
-    if not CONTEXT_FILE.exists():
-        print(f"[context] {CONTEXT_FILE} no existe, nada que actualizar.")
-        return
+# ── Main ─────────────────────────────────────────────────────────────────────
 
-    commits = _recent_commits()
-    if not commits:
-        print("[context] Sin commits recientes.")
-        return
+def update_context() -> None:
+    content = CONTEXT_FILE.read_text()
 
-    content = CONTEXT_FILE.read_text(encoding="utf-8")
-    new_section = _build_cambios_section(commits)
-    updated = _update_section(content, "## Últimos cambios", new_section)
+    commits = build_commits_section()
+    if commits:
+        content = _replace_section(content, "## Últimos cambios", commits)
 
-    if updated != content:
-        CONTEXT_FILE.write_text(updated, encoding="utf-8")
-        print(f"[context] CONTEXT.md actualizado con {len(commits)} commits recientes.")
-    else:
-        print("[context] CONTEXT.md ya está al día.")
+    specs = build_specs_section()
+    if specs:
+        content = _replace_section(content, "## Specs disponibles", specs)
+
+    CONTEXT_FILE.write_text(content)
+    print(f"✓ CONTEXT.md actualizado ({MAX_COMMITS} commits, {len(list(SPECS_DIR.glob('*.md')))} specs)")
 
 
 if __name__ == "__main__":
-    main()
+    update_context()

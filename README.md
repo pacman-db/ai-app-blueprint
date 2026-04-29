@@ -296,8 +296,20 @@ CONTEXT.md         → Living memory, updated after every session and commit
 
 ## Real-world examples
 
-> Both examples are the blueprint author's own products — not a geographic limitation.
+> All examples are the blueprint author's own products — not a geographic limitation.
 > The blueprint works with any stack, language, and market.
+
+### [handoff.cl](https://handoff.cl) — Handoff
+
+Multi-LLM chat platform. Share and continue conversations across Claude, GPT, Gemini, Mistral and Perplexity with full context preserved.
+
+- **MVP in 3 effective hours.** 8 hours total including iterations and improvements.
+- **Stack:** FastAPI + SvelteKit 5 + Firebase Auth + PostgreSQL (Railway) + SSE streaming
+- **Features shipped:** multi-model routing, context management, tool calling (web search via Perplexity), progressive summarization, token counting, admin panel, sharing by URL
+- **Pattern demonstrated:** Multi-provider LLM adapters, streaming SSE, encrypted API keys (AES-256), model routing by message complexity, living docs auto-updated after every commit.
+- Built with **Claude Code only** — no GPT, no Gemini used during development.
+
+---
 
 ### [igris.cl](https://igris.cl) — Igris Validate + Hipotecario
 

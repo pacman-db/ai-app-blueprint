@@ -303,7 +303,7 @@ CONTEXT.md         → Living memory, updated after every session and commit
 
 Multi-LLM chat platform. Share and continue conversations across Claude, GPT, Gemini, Mistral and Perplexity with full context preserved.
 
-- **MVP in 3 effective hours.** 8 hours total including iterations and improvements.
+- **MVP in 3 effective hours.** 8 hours total including iterations and improvements. *(assumes familiarity with the stack and the blueprint already installed — your first project may take longer as you learn the workflow)*
 - **Stack:** FastAPI + SvelteKit 5 + Firebase Auth + PostgreSQL (Railway) + SSE streaming
 - **Features shipped:** multi-model routing, context management, tool calling (web search via Perplexity), progressive summarization, token counting, admin panel, sharing by URL
 - **Pattern demonstrated:** Multi-provider LLM adapters, streaming SSE, encrypted API keys (AES-256), model routing by message complexity, living docs auto-updated after every commit.

@@ -145,18 +145,46 @@ bash scripts/install_hooks.sh
 
 ## Step 3 — Quality gate (Makefile)
 
+Generate the Makefile based on the chosen stack:
+
+**Option 1 — SvelteKit full-stack:**
 ```makefile
 install-dev:
-	pip install -r requirements.txt -r requirements-dev.txt  # adapt to stack
+	npm install
+
+quality:
+	npm run check      # svelte-check + TypeScript
+	npm run lint       # eslint
+	npm run test       # vitest
+
+dev:
+	npm run dev
+
+build:
+	npm run build
+
+test:
+	npm run test
+```
+
+**Option 2 — SvelteKit + FastAPI:**
+```makefile
+install-dev:
+	pip install -r requirements.txt -r requirements-dev.txt
+	cd frontend && npm install
 
 quality:
 	.venv/bin/ruff check src/ tests/ main.py --fix
 	.venv/bin/ruff format src/ tests/ main.py
 	.venv/bin/mypy src/
 	.venv/bin/pytest tests/ -v
+	cd frontend && npm run check
 
-dev:
-	.venv/bin/uvicorn main:app --reload  # adapt to stack (e.g. npm run dev)
+dev-api:
+	.venv/bin/uvicorn main:app --reload
+
+dev-frontend:
+	cd frontend && npm run dev
 
 test:
 	.venv/bin/pytest tests/ -v
@@ -165,10 +193,38 @@ build:
 	cd frontend && npm run build
 ```
 
+**Option 3 — adapt to the described stack.**
+
 ---
 
 ## Step 4 — CI/CD (.github/workflows/ci.yml)
 
+Generate based on the chosen stack:
+
+**Option 1 — SvelteKit full-stack:**
+```yaml
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - run: npm install
+      - run: npm run check
+      - run: npm run lint
+      - run: npm run test
+```
+
+**Option 2 — SvelteKit + FastAPI:**
 ```yaml
 name: CI
 on:
@@ -185,6 +241,11 @@ jobs:
         with:
           python-version: "3.11"
           cache: "pip"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
       - run: pip install -r requirements.txt -r requirements-dev.txt
       - run: ruff check src/ tests/ main.py
       - run: ruff format --check src/ tests/ main.py
@@ -192,6 +253,7 @@ jobs:
       - run: pytest tests/ -v --tb=short
         env:
           ANTHROPIC_API_KEY: sk-ant-test-key
+      - run: cd frontend && npm install && npm run check
 ```
 
 ---

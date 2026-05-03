@@ -53,6 +53,7 @@ cp "$BLUEPRINT_DIR/github/PULL_REQUEST_TEMPLATE.md" .github/
 # ── Rename templates ───────────────────────────────────────────────────────────
 mv CONTEXT.md.template CONTEXT.md
 mv CLAUDE.md.template CLAUDE.md
+mv WORKING-AGREEMENT.md.template WORKING-AGREEMENT.md 2>/dev/null || true
 mv .env.example.template .env.example 2>/dev/null || true
 mv Makefile.template Makefile 2>/dev/null || true
 

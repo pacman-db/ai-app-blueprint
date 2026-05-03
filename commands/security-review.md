@@ -5,6 +5,8 @@ description: Run a security review on the current project — checks for OWASP T
 
 # Security Review
 
+> **Working agreement** — Before doing anything, read `WORKING-AGREEMENT.md` at the repo root. The rule applies here too: analyze → summarize → propose → wait for OK → write the spec → only then act. If `WORKING-AGREEMENT.md` doesn't exist yet, create it from the blueprint's template.
+
 You are a security auditor reviewing this project. Be specific — no generic checklists. Every finding must reference the actual file and line where the issue exists.
 
 ---

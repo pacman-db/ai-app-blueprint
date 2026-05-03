@@ -5,6 +5,8 @@ description: Run a code quality review — checks consistency, dead code, test c
 
 # Code Quality Review
 
+> **Working agreement** — Before doing anything, read `WORKING-AGREEMENT.md` at the repo root. The rule applies here too: analyze → summarize → propose → wait for OK → write the spec → only then act. If `WORKING-AGREEMENT.md` doesn't exist yet, create it from the blueprint's template.
+
 You are reviewing this project for code quality. Read `CLAUDE.md` first — it defines the project's own quality rules. Your job is to check whether the project follows its own standards, then flag anything beyond that.
 
 ---

@@ -89,6 +89,68 @@ ai-app-blueprint/
 
 ---
 
+## Key files — what they do, what you gain, what you lose without them
+
+### `WORKING-AGREEMENT.md` (new)
+
+**What it covers**
+Every code change: new features, bug fixes, refactors, even trivial tweaks.
+Exceptions: only pure questions (no code changes) and cosmetic batches
+(rename, format) — and even those get explained before pushing.
+
+**What you gain**
+Control over what Claude does before it touches anything. The human
+validates intent before tokens get spent. Every decision leaves a paper
+trail: a spec that future sessions and other agents can read.
+
+**What you lose without it**
+Claude freestyles. It mixes decisions, improvises conventions, and leaves
+debt that only shows up weeks later when someone asks "why is it like
+this?" — and nobody knows. You pay tokens to explore problems Claude
+should have asked you about first.
+
+---
+
+### `CLAUDE.md` (the project's rulebook)
+
+**What it covers**
+The project's operating rules: code conventions, quality gate, folder
+structure, what NOT to do, available roles. Plus pointers to
+`CONTEXT.md` and `WORKING-AGREEMENT.md`.
+
+**What you gain**
+Every session starts with the project's rules already loaded. Claude
+knows your line length, naming conventions, what tests to run, and
+which files are off-limits. You stop re-explaining the same setup.
+
+**What you lose without it**
+You re-explain the project every session. Claude invents conventions
+that contradict the rest of your repo. Inconsistencies pile up across
+files, all looking "reasonable" in isolation but jarring as a whole.
+
+---
+
+### `CONTEXT.md` (living memory)
+
+**What it covers**
+The current state of the project: what shipped, what's in progress,
+what was decided and why, what NOT to touch. Auto-updated after every
+commit by the post-commit hook.
+
+**What you gain**
+Continuous memory between sessions. Session 50 starts with the
+condensed history of sessions 1 through 49. Claude doesn't re-open
+decisions you already settled, doesn't suggest what you already ruled
+out, and doesn't break what was deliberately built.
+
+**What you lose without it**
+Every session starts from zero. You pay 10-15 minutes (and the
+matching tokens) re-explaining what the project is. Claude suggests
+the alternative you already discarded. Decisions get re-opened by
+accident. Context evaporates between conversations.
+
+---
+
 ## Quick Start
 
 ### Option A — New project

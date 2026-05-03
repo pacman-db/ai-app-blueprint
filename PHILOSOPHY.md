@@ -18,6 +18,23 @@ At $3-15 per million tokens, that's expensive. At 30-60 minutes per week, that's
 
 ---
 
+## How the AI works in this blueprint
+
+Spec before code. Always. No exceptions.
+
+Before any change, the AI:
+1. Reads the project context and the affected module
+2. Proposes what it will do (with risks and alternatives)
+3. Waits for human approval
+4. Documents the decision in the corresponding spec
+5. Only then writes code
+
+See `WORKING-AGREEMENT.md` for the full flow and the few cases where something different applies.
+
+Why this rule? Because without it the AI improvises, mixes decisions, and leaves debt that only shows up later. With it, the human validates intent before burning tokens, and the resulting spec serves future sessions and other agents.
+
+---
+
 ## The insight
 
 The best developers don't carry everything in their heads. They write things down — architecture docs, ADRs, specs — so that anyone (including their future self) can understand the system without asking.

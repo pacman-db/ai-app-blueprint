@@ -1,5 +1,11 @@
 # CLAUDE.md — {{PROJECT_NAME}}
 
+## 🔴 Rule #1 — Read first, code after
+
+**Before any action**, read `WORKING-AGREEMENT.md` and respect it. Not optional.
+
+Summary: analyze → summarize → propose → wait for OK → write spec → only then code.
+
 ## Start of every session
 
 **Read `CONTEXT.md` first.** It has the current state, architecture, key decisions, and what not to touch.

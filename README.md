@@ -25,6 +25,29 @@ cp commands/bootstrap-app.md ~/.claude/commands/
 
 ---
 
+## Migrating an existing project (bootstrapped before WORKING-AGREEMENT.md)
+
+If you bootstrapped your project before the `WORKING-AGREEMENT.md` rule existed, you have two options:
+
+**Option 1 — Manual copy (recommended, takes 30 seconds):**
+```bash
+# From your project root
+curl -fsSL https://raw.githubusercontent.com/pacman-db/ai-app-blueprint/main/blueprint/WORKING-AGREEMENT.md.template -o WORKING-AGREEMENT.md
+```
+Then add this block at the top of your `CLAUDE.md`:
+```markdown
+## 🔴 Rule #1 — Read first, code after
+
+**Before any action**, read `WORKING-AGREEMENT.md` and respect it. Not optional.
+
+Summary: analyze → summarize → propose → wait for OK → write spec → only then code.
+```
+
+**Option 2 — Re-run `/bootstrap-app`:**
+This will overwrite `CLAUDE.md` and other templates. Only do this on a clean branch where you can review the diff and pick the parts you want.
+
+---
+
 ## What's inside
 
 ```

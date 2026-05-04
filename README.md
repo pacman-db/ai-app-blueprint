@@ -68,7 +68,7 @@ ai-app-blueprint/
 │       │   └── _spec.template.md ← spec template with status marker
 │       ├── clarify/             ← assumptions (+ auto Last Review)
 │       ├── modular/             ← module map + contracts
-│       └── sdd/                 ← system design document
+│       └── architecture/        ← system design document (architecture, API contracts)
 │
 ├── scripts/
 │   ├── update_docs.py           ← auto-updates ALL living docs after each commit
@@ -148,6 +148,18 @@ Every session starts from zero. You pay 10-15 minutes (and the
 matching tokens) re-explaining what the project is. Claude suggests
 the alternative you already discarded. Decisions get re-opened by
 accident. Context evaporates between conversations.
+
+---
+
+## What this blueprint is built on
+
+The blueprint isn't a new methodology — it's the automated implementation of three established practices:
+
+- **GitHub Spec-Kit** — specs before code, constitution, clarify, plan. *Here:* Claude generates them from your idea instead of you writing them by hand.
+- **Spec-Driven Development (SDD)** — one spec per feature, written before any code. *Here:* lives in `docs/specs/`, with a status marker that auto-updates.
+- **Modular architecture + DDD lite** — modules with clear contracts. *Here:* `docs/modular/` defines the contracts, `docs/architecture/` the system design.
+
+What's new is not the methodology — it's that Claude puts it into practice from your idea, and the docs stay alive across the project's lifetime.
 
 ---
 

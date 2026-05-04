@@ -40,7 +40,7 @@ Summary: analyze → summarize → propose → wait for OK → write spec → on
 │   ├── vision/            # product vision and market context
 │   ├── plan/              # technical plan + ADRs (+ auto Build Progress)
 │   ├── modular/           # module contracts
-│   ├── sdd/               # system design document
+│   ├── architecture/      # system design document (architecture, API contracts)
 │   └── specs/             # one spec per feature (with status markers)
 ├── src/                   # source code
 ├── tests/                 # test suite

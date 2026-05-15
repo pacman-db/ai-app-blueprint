@@ -4,7 +4,7 @@ update_docs.py v2 — Keeps all living docs in sync after every commit.
 
 Triggered by:
   - git post-commit hook
-  - Claude Code Stop hook
+  - AI agent session-end hook (onSessionEnd in .handoff/settings.json)
 
 Surgically updates (never overwrites full files):
   - CONTEXT.md                    → ## Recent Changes

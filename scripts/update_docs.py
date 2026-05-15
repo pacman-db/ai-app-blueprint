@@ -50,6 +50,8 @@ LABELS: dict[str, dict[str, str]] = {
         "project_status": "Project Status",
         "last_review": "Last Review",
         "build_progress": "Build Progress",
+        "pending_specs": "Specs Needed",
+        "working_agreement": "Working Agreement (active)",
         "auto_updated": "Auto-updated",
         "features": "Features",
         "fixes": "Fixes",
@@ -65,12 +67,18 @@ LABELS: dict[str, dict[str, str]] = {
         "open_questions": "Open questions detected",
         "stale_warning": "⚠️ Not manually updated in",
         "stale_unit": "commits — consider reviewing this doc",
+        "pending_specs_none": "All recent src/ changes have a corresponding spec. ✓",
+        "pending_specs_intro": "Recent src/ changes with no matching spec — write the spec before the next commit:",
+        "wa_rule": "**Rule: analyze → propose → wait for OK → write spec → only then code.**",
+        "wa_reminder": "Do NOT write code before a spec exists in `docs/specs/`. This rule applies even in long sessions.",
     },
     "es": {
         "recent_changes": "Últimos cambios",
         "project_status": "Estado del proyecto",
         "last_review": "Última revisión",
         "build_progress": "Progreso de construcción",
+        "pending_specs": "Specs pendientes",
+        "working_agreement": "Working Agreement (activo)",
         "auto_updated": "Actualizado automáticamente",
         "features": "Features",
         "fixes": "Fixes",
@@ -86,6 +94,10 @@ LABELS: dict[str, dict[str, str]] = {
         "open_questions": "Preguntas abiertas detectadas",
         "stale_warning": "⚠️ Sin actualización manual en",
         "stale_unit": "commits — considera revisar este documento",
+        "pending_specs_none": "Todos los cambios recientes en src/ tienen spec correspondiente. ✓",
+        "pending_specs_intro": "Cambios recientes en src/ sin spec — escribe la spec antes del próximo commit:",
+        "wa_rule": "**Regla: analiza → propone → espera OK → escribe spec → solo entonces codea.**",
+        "wa_reminder": "NO escribas código sin que exista una spec en `docs/specs/`. Esta regla aplica incluso en sesiones largas.",
     },
 }
 
@@ -96,6 +108,8 @@ _KNOWN_HEADERS: dict[str, list[str]] = {
     "project_status": ["Project Status", "Estado del proyecto"],
     "last_review": ["Last Review", "Última revisión"],
     "build_progress": ["Build Progress", "Progreso de construcción"],
+    "pending_specs": ["Specs Needed", "Specs pendientes"],
+    "working_agreement": ["Working Agreement (active)", "Working Agreement (activo)"],
 }
 
 
@@ -222,13 +236,65 @@ def _build_recent_changes(commits: list[dict[str, str]], L: dict[str, str]) -> s
     return "\n".join(lines) + "\n"
 
 
+def _src_files_without_spec(commits: list[dict[str, str]]) -> list[str]:
+    """Return src/ files changed recently that have no matching spec."""
+    specs_dir = ROOT / "docs" / "specs"
+    spec_words: set[str] = set()
+    if specs_dir.exists():
+        for spec in specs_dir.glob("*.md"):
+            if not spec.name.startswith("_"):
+                for w in re.split(r"[-_]", spec.stem.lower()):
+                    if len(w) > 3:
+                        spec_words.add(w)
+
+    changed_src = sorted({
+        f for c in commits for f in c["files"].splitlines()
+        if f.startswith("src/") and not f.endswith((".pyc", ".map"))
+    })
+
+    unmatched = [
+        f for f in changed_src
+        if not any(w in f.lower() for w in spec_words)
+    ]
+    return unmatched
+
+
+def _build_pending_specs(commits: list[dict[str, str]], L: dict[str, str]) -> str:
+    """Build the Specs Needed section for CONTEXT.md."""
+    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    unmatched = _src_files_without_spec(commits)
+    lines = [f"## {L['pending_specs']}\n", f"_{L['auto_updated']}: {now}_\n"]
+    if unmatched:
+        lines.append(f"\n⚠️ {L['pending_specs_intro']}\n")
+        for f in unmatched[:10]:
+            lines.append(f"- `{f}`")
+    else:
+        lines.append(f"\n{L['pending_specs_none']}")
+    return "\n".join(lines) + "\n"
+
+
+def _build_working_agreement_reminder(L: dict[str, str]) -> str:
+    """Build the Working Agreement reminder section for CONTEXT.md."""
+    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    return (
+        f"## {L['working_agreement']}\n\n"
+        f"_{L['auto_updated']}: {now}_\n\n"
+        f"{L['wa_rule']}\n\n"
+        f"{L['wa_reminder']}\n"
+    )
+
+
 def update_context(commits: list[dict[str, str]], L: dict[str, str]) -> bool:
-    """Update CONTEXT.md with recent changes. Returns True if modified."""
+    """Update CONTEXT.md with recent changes, pending specs and WA reminder."""
     f = ROOT / "CONTEXT.md"
     if not f.exists():
         return False
     content = f.read_text(encoding="utf-8")
     updated = _replace_section(content, "recent_changes", _build_recent_changes(commits, L), L)
+    updated = _replace_section(updated, "pending_specs", _build_pending_specs(commits, L), L)
+    updated = _replace_section(
+        updated, "working_agreement", _build_working_agreement_reminder(L), L
+    )
     if updated != content:
         f.write_text(updated, encoding="utf-8")
         print(f"  ✓ CONTEXT.md ({len(commits)} commits)")

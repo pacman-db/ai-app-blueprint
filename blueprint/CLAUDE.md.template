@@ -1,10 +1,14 @@
 # CLAUDE.md — {{PROJECT_NAME}}
 
-## 🔴 Rule #1 — Read first, code after
+## 🔴 Rule #1 — Spec before code. Always.
 
-**Before any action**, read `WORKING-AGREEMENT.md` and respect it. Not optional.
+**Before writing any code**, check that a spec exists in `docs/specs/`.
+If it doesn't exist, write it first. No exceptions — not even in long sessions.
 
-Summary: analyze → summarize → propose → wait for OK → write spec → only then code.
+**Workflow:** analyze → summarize → propose → wait for OK → write spec → only then code.
+
+Read `WORKING-AGREEMENT.md` for the full contract. Read `CONTEXT.md` for the current state.
+The section **"Specs Needed"** in CONTEXT.md lists changes that still need a spec — address those first.
 
 ## Start of every session
 
@@ -69,6 +73,8 @@ When adding a new feature:
 | Doc | Auto-updated section |
 |---|---|
 | `CONTEXT.md` | `## Recent Changes` |
+| `CONTEXT.md` | `## Specs Needed` ← check this every session |
+| `CONTEXT.md` | `## Working Agreement (active)` ← rule reminder |
 | `docs/constitution/constitution.md` | `## Project Status` |
 | `docs/clarify/assumptions.md` | `## Last Review` |
 | `docs/plan/v1-mvp.md` | `## Build Progress` |

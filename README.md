@@ -78,8 +78,9 @@ ai-app-blueprint/
 ├── PHILOSOPHY.md                ← why this blueprint exists
 │
 ├── blueprint/                   ← copy these to your project
-│   ├── CONTEXT.md.template      ← living context (auto-updated)
+│   ├── CONTEXT.md.template      ← living context (auto-updated every session)
 │   ├── CLAUDE.md.template       ← project rules for Claude Code
+│   ├── WORKING-AGREEMENT.md.template ← spec-before-code contract
 │   ├── Makefile.template        ← standardized quality commands
 │   ├── .env.example.template    ← env vars documented
 │   └── docs/
@@ -93,21 +94,54 @@ ai-app-blueprint/
 │       └── architecture/        ← system design document (architecture, API contracts)
 │
 ├── scripts/
-│   ├── update_docs.py           ← auto-updates ALL living docs after each commit
-│   ├── install_hooks.sh         ← installs git hooks (run once after clone)
+│   ├── update_docs.py           ← harness core: auto-updates all living docs after each commit/session
+│   ├── install_hooks.sh         ← installs git hooks: pre-commit (spec check) + post-commit (docs)
 │   └── bootstrap.sh             ← full project bootstrapper
 │
 ├── github/
 │   ├── workflows/ci.yml         ← quality gate on every push
 │   └── PULL_REQUEST_TEMPLATE.md
 │
-├── commands/
-│   └── bootstrap-app.md        ← Claude Code global command (/bootstrap-app)
+├── commands/                    ← Claude Code slash commands (copy to ~/.claude/commands/)
+│   ├── bootstrap-app.md         ← /bootstrap-app
+│   ├── code-quality.md          ← /code-quality
+│   ├── security-review.md       ← /security-review
+│   └── architecture-review.md   ← /architecture-review
+│
+├── skills/                      ← Claude Code role personas (copy to ~/.claude/skills/)
+│   ├── senior-backend.md        ← senior backend engineer mode
+│   ├── senior-frontend.md       ← senior frontend engineer mode
+│   ├── senior-design.md         ← senior UX/UI designer mode
+│   └── security-review.md       ← security engineer mode
 │
 └── examples/
     ├── task-manager/            ← Example output: task manager app
     └── bookia/                  ← Bookia (bookia.cl)
 ```
+
+---
+
+## This is a harness
+
+`scripts/update_docs.py` is not just a script — it's the **harness** of your AI development workflow.
+
+A harness wraps an AI agent's sessions with infrastructure that fires automatically before and after actions. This blueprint implements one via two hooks:
+
+```
+git commit
+    └─→ pre-commit hook   → warns if src/ changes have no spec
+    └─→ post-commit hook  → update_docs.py → all living docs refreshed
+
+Claude Code session ends
+    └─→ Stop hook         → update_docs.py → CONTEXT.md updated for next session
+```
+
+Three things update automatically in CONTEXT.md after every session:
+- **Recent Changes** — classified commits (feat / fix / infra)
+- **Specs Needed** — src/ files changed without a matching spec (the gap detector)
+- **Working Agreement (active)** — rule reminder so Claude never forgets even in long sessions
+
+The harness is what makes this different from a static template. Docs don't go stale. Rules don't get forgotten. Context survives across sessions without manual work.
 
 ---
 

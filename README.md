@@ -125,21 +125,46 @@ ai-app-blueprint/
 
 `scripts/update_docs.py` is not just a script — it's the **harness** of your AI development workflow.
 
-A harness wraps an AI agent's sessions with infrastructure that fires automatically before and after actions. This blueprint implements one via two hooks:
+A harness wraps an AI agent's sessions with infrastructure that fires automatically before and after actions. This blueprint implements one:
 
-```
-git commit
-    └─→ pre-commit hook   → warns if src/ changes have no spec
-    └─→ post-commit hook  → update_docs.py → all living docs refreshed
-
-Claude Code session ends
-    └─→ Stop hook         → update_docs.py → CONTEXT.md updated for next session
+```mermaid
+flowchart TD
+    A[git commit] --> B[pre-commit hook]
+    A --> C[post-commit hook]
+    B --> B1["⚠️ warn: src/ changed without spec"]
+    C --> D[update_docs.py]
+    E[AI agent session ends] --> F{hook available?}
+    F -->|onSessionEnd .handoff/settings.json| D
+    F -->|scripts/watch.py optional| D
+    D --> G[CONTEXT.md]
+    G --> G1["## Recent Changes"]
+    G --> G2["## Specs Needed ← gap detector"]
+    G --> G3["## Working Agreement ← rule reminder"]
+    G --> H[Next session: agent reads context in 30s]
 ```
 
 Three things update automatically in CONTEXT.md after every session:
 - **Recent Changes** — classified commits (feat / fix / infra)
 - **Specs Needed** — src/ files changed without a matching spec (the gap detector)
-- **Working Agreement (active)** — rule reminder so Claude never forgets even in long sessions
+- **Working Agreement (active)** — rule reminder so the agent never forgets even in long sessions
+
+### Context engineering — progressive summarization
+
+As the project grows, CONTEXT.md grows. A 600-line CONTEXT.md wastes tokens and buries what matters. The blueprint handles this with **context rotation**:
+
+```mermaid
+flowchart LR
+    A[CONTEXT.md\ncurrent state\n< 200 lines] -->|grows beyond threshold| B[rotate]
+    B --> C[CONTEXT-1.md\narchive: months 1-2]
+    B --> D[CONTEXT.md\nreset: current state only]
+    C -->|grows again| E[CONTEXT-2.md\narchive: month 3+]
+    A --> F[Agent reads CONTEXT.md first]
+    F -->|needs history| G[Agent reads CONTEXT-1.md]
+```
+
+The agent reads `CONTEXT.md` (current, lean). Only goes deeper if the task requires historical context. Each file is a summary of a phase — not a full log.
+
+> `update_docs.py` manages rotation automatically when CONTEXT.md exceeds the configured line threshold.
 
 The harness is what makes this different from a static template. Docs don't go stale. Rules don't get forgotten. Context survives across sessions without manual work.
 

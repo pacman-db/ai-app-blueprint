@@ -1,5 +1,15 @@
 # CLAUDE.md — {{PROJECT_NAME}}
 
+## Start of every session
+
+1. If `HANDOFF.md` exists → read it first (context from previous session)
+2. Read `CONTEXT.md` → current project state
+
+To save context before closing: `/handoff-save`
+To load context at session start: `/handoff-open`
+
+---
+
 ## 🔴 Rule #1 — Spec before code. Always.
 
 **Before writing any code**, check that a spec exists in `docs/specs/`.

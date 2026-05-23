@@ -31,7 +31,7 @@ Use the answers to:
 - Write `docs/plan/v1-mvp.md` with ADRs relevant to the stack and problem
 - Write `docs/clarify/assumptions.md` with real open questions for that product
 - Write `docs/modular/modules.md` with the module breakdown inferred from the features
-- Write `docs/sdd/arquitectura.md` with the data flow and system design
+- Write `docs/architecture/arquitectura.md` with the data flow and system design
 
 Do not use generic placeholders anywhere — every doc must reflect the actual project.
 
@@ -351,7 +351,7 @@ Docs generados:
   docs/plan/v1-mvp.md
   docs/clarify/assumptions.md
   docs/modular/modules.md
-  docs/sdd/arquitectura.md
+  docs/architecture/arquitectura.md
 
 Specs iniciales listas en docs/specs/:
   <lista de specs generadas>

@@ -32,17 +32,6 @@ Clona el siguiente repo https://github.com/handoffcl/ai-app-blueprint y ejecuta 
 **Paso 4** — Describe tu app en lenguaje natural. Claude genera todo solo:
 specs, arquitectura, docs, estructura del proyecto y código.
 
----
-
-**Con la extensión Handoff VS Code:**
-
-**Paso 1** — Abre VS Code con una carpeta vacía
-
-**Paso 2** — `Cmd+Shift+P` → `Handoff: Install Blueprint`
-
-**Paso 3** — Click en **Plugin** → selecciona **bootstrap-app**
-
-**Paso 4** — Describe tu idea → Claude genera todo solo
 
 ---
 

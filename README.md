@@ -48,13 +48,19 @@ Claude reads it at the start of every session and starts working in 30 seconds.
 
 ## Quickstart
 
-```bash
-git clone https://github.com/pacman-db/ai-app-blueprint
-cp commands/bootstrap-app.md ~/.claude/commands/
+**Prerequisites:** Git · VS Code · [Claude Code extension](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) installed
 
-# Then in any Claude Code session:
-/bootstrap-app
+**Step 1** — Open VS Code and create an empty folder for your new project
+
+**Step 2** — In the Claude Code chat, write exactly this:
 ```
+Clone the following repo https://github.com/handoffcl/ai-app-blueprint and run bootstrap
+```
+
+**Step 3** — Claude will ask:
+> *"Tell me your idea: what does it do, who is it for, and what can a user do with it?"*
+
+**Step 4** — Describe your app in natural language. Claude generates everything on its own: specs, architecture, docs, project structure and code.
 
 ---
 
@@ -65,7 +71,7 @@ If you bootstrapped your project before the `WORKING-AGREEMENT.md` rule existed,
 **Option 1 — Manual copy (recommended, takes 30 seconds):**
 ```bash
 # From your project root
-curl -fsSL https://raw.githubusercontent.com/pacman-db/ai-app-blueprint/main/blueprint/WORKING-AGREEMENT.md.template -o WORKING-AGREEMENT.md
+curl -fsSL https://raw.githubusercontent.com/handoffcl/ai-app-blueprint/main/blueprint/WORKING-AGREEMENT.md.template -o WORKING-AGREEMENT.md
 ```
 Then add this block at the top of your `CLAUDE.md`:
 ```markdown
@@ -260,7 +266,7 @@ What's new is not the methodology — it's that Claude puts it into practice fro
 ### Option A — New project
 ```bash
 # 1. Clone this blueprint
-git clone https://github.com/pacman-db/ai-app-blueprint
+git clone https://github.com/handoffcl/ai-app-blueprint
 cd ai-app-blueprint
 
 # 2. Bootstrap your project (English, default)

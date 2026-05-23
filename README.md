@@ -17,15 +17,16 @@ Este blueprint hace que tu repo sea auto-documentado para la IA — arquitectura
 
 ### Inicio rápido
 
-**Claude Code CLI:**
+**Claude Code CLI (VS Code o terminal):**
 ```bash
-# 1. Instala el plugin (una sola vez)
-/plugin marketplace update ai-app-blueprint
-/plugin install ai-app-blueprint@ai-app-blueprint
+# 1. Clona e instala (una sola vez)
+git clone https://github.com/handoffcl/ai-app-blueprint
+cd ai-app-blueprint
+bash scripts/install.sh
 
-# 2. En una carpeta vacía de tu nuevo proyecto:
-/bootstrap-app
-# → El agente pregunta tu idea y crea todo
+# 2. Abre una carpeta vacía en VS Code con Claude Code y escribe:
+ejecuta bootstrap
+# → El agente lee commands/bootstrap-app.md, pregunta tu idea y crea todo
 ```
 
 **Extensión Handoff VS Code:**
@@ -35,8 +36,6 @@ Este blueprint hace que tu repo sea auto-documentado para la IA — arquitectura
 3. Click en Plugin → selecciona "bootstrap-app"
 # → El agente pregunta tu idea y crea todo
 ```
-
-> ⚠️ No escribas "ejecuta bootstrap" en lenguaje natural — el agente podría confundirlo con el script de setup. Usa siempre `/bootstrap-app` o el botón Plugin.
 
 ---
 
@@ -109,7 +108,7 @@ ai-app-blueprint/
 ├── scripts/
 │   ├── update_docs.py           ← harness core: auto-updates all living docs after each commit/session
 │   ├── install_hooks.sh         ← installs git hooks: pre-commit (spec check) + post-commit (docs)
-│   └── bootstrap.sh             ← full project bootstrapper
+│   └── setup.sh             ← full project bootstrapper
 │
 ├── github/
 │   ├── workflows/ci.yml         ← quality gate on every push
@@ -266,10 +265,10 @@ git clone https://github.com/pacman-db/ai-app-blueprint
 cd ai-app-blueprint
 
 # 2. Bootstrap your project (English, default)
-bash scripts/bootstrap.sh my-app-name
+bash scripts/setup.sh my-app-name
 
 # 3. Bootstrap in Spanish
-bash scripts/bootstrap.sh mi-app --lang es
+bash scripts/setup.sh mi-app --lang es
 
 # 4. Open in Claude Code and start building
 # All living docs will auto-update after every session and commit
@@ -356,7 +355,7 @@ Next session: Claude reads the docs → full context → starts working immediat
 
 ## Language support
 
-Set language in `.blueprint` (created by `bootstrap.sh`):
+Set language in `.blueprint` (created by `setup.sh`):
 ```
 BLUEPRINT_LANG=es   # Spanish auto-updated sections
 BLUEPRINT_LANG=en   # English (default)
@@ -364,7 +363,7 @@ BLUEPRINT_LANG=en   # English (default)
 
 Or pass `--lang es` when bootstrapping:
 ```bash
-bash scripts/bootstrap.sh mi-proyecto --lang es
+bash scripts/setup.sh mi-proyecto --lang es
 ```
 
 **What's language-aware:** All auto-updated section headers and labels.

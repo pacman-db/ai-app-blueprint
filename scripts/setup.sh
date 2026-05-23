@@ -1,9 +1,9 @@
 #!/bin/bash
-# bootstrap.sh — Create a new project from the AI App Blueprint v2
+# setup.sh — Create a new project from the AI App Blueprint v2
 #
 # Usage:
-#   bash scripts/bootstrap.sh <project-name>              (English, default)
-#   bash scripts/bootstrap.sh <project-name> --lang es    (Spanish)
+#   bash scripts/setup.sh <project-name>              (English, default)
+#   bash scripts/setup.sh <project-name> --lang es    (Spanish)
 #
 # What it does:
 #   1. Creates project directory with full doc structure

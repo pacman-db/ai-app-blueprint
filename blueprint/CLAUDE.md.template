@@ -54,7 +54,7 @@ The section **"Specs Needed"** in CONTEXT.md lists changes that still need a spe
 │   ├── vision/            # product vision and market context
 │   ├── plan/              # technical plan + ADRs (+ auto Build Progress)
 │   ├── modular/           # module contracts
-│   ├── architecture/      # system design document (architecture, API contracts)
+│   ├── sdd/               # system design document (architecture, API contracts)
 │   └── specs/             # one spec per feature (with status markers)
 ├── src/                   # source code
 ├── tests/                 # test suite

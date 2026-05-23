@@ -17,17 +17,12 @@ Este blueprint hace que tu repo sea auto-documentado para la IA — arquitectura
 
 ### Inicio rápido
 
-**Opción A — Desde Claude Code (recomendado):**
-```
-# En una sesión de Claude Code, escribe:
-lee el archivo commands/bootstrap-app.md del repo ai-app-blueprint y sigue las instrucciones
-```
-
-**Opción B — Instalar como comando global:**
 ```bash
 git clone https://github.com/handoffcl/ai-app-blueprint
 cp commands/bootstrap-app.md ~/.claude/commands/
-# Luego en cualquier sesión: /bootstrap-app
+
+# Luego en cualquier sesión de Claude Code:
+/bootstrap-app
 ```
 
 ---

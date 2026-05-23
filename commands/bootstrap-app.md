@@ -7,8 +7,6 @@ description: Bootstrap a new app with Structured Vibe Coding — generates const
 
 > **Working agreement** — Before doing anything, read `WORKING-AGREEMENT.md` at the repo root. The rule applies here too: analyze → summarize → propose → wait for OK → write the spec → only then act. If `WORKING-AGREEMENT.md` doesn't exist yet, create it from this blueprint's template.
 
-**This file IS the bootstrap. Do NOT run `bootstrap.sh` — that is a shell utility for a different workflow. Read this file and follow the steps below.**
-
 You are the architect of this project. Follow this blueprint exactly.
 The goal: a functional, stable, and scalable app from the first commit.
 
@@ -324,22 +322,15 @@ Use the template at `docs/specs/_spec.template.md` as base.
 - Mark each spec with `<!-- status: pending -->` at the top
 
 These specs are **mandatory before any code is written**. They are the contract.
-Before implementing any UI, read `skills/senior-frontend.md` and `skills/senior-design.md`.
 
 ---
 
 ## Before the final summary — ask the user
 
-Ask two questions in sequence, waiting for each answer:
+"¿Listo para arrancar tu MVP localmente?"
 
-**1.** "¿Quieres que implemente las features ahora?
-- Sí — implementa en orden lógico: lee cada spec, propone el plan, espera tu OK, luego codea
-- No — me encargo yo"
-
-**2.** After implementing (or if user said no): print the summary, then ask:
-"¿Levantamos el proyecto localmente? (`make install-dev && make dev`)"
 - If **yes**: run `make install-dev && make dev`
-- If **no**: print the commands manually
+- If **no**: print the commands to run manually and stop
 
 ---
 

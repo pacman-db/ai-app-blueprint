@@ -1,6 +1,6 @@
 ---
 name: bootstrap-app
-description: Bootstrap a new app from a single idea — modular architecture, spec-driven development, living docs with auto-harness, and quality design. Not a monolith. Everything updates automatically after every commit and session.
+description: Bootstrap a new app with Structured Vibe Coding — generates constitution, vision, ADRs, specs and living docs from a single idea. Use when starting any new project from scratch.
 ---
 
 # Bootstrap — New AI App
@@ -310,112 +310,75 @@ _Auto-updated by scripts/update_docs.py_
 
 ---
 
-## Step 6 — Generate initial specs
+## Before the final summary — generate initial specs
 
-Generate one spec file per main feature inferred from the user's answer.
+Before printing the summary, generate one spec file per main feature inferred from the user's answer.
 Use the template at `docs/specs/_spec.template.md` as base.
 
 **Rules:**
 - One file per feature: `docs/specs/<feature-slug>.md`
-- Fill every section with real content — no placeholders
+- Fill every section with real content from the idea — no placeholders
 - Include real behavior steps, real edge cases, real test scenarios for that domain
 - Mark each spec with `<!-- status: pending -->` at the top
 
-These specs are the contract. No code is written without an approved spec.
+These specs are **mandatory before any code is written**. They are the contract.
+Before implementing any UI, read `skills/senior-frontend.md` and `skills/senior-design.md`.
 
 ---
 
-## Step 7 — Ask about implementation
+## Before the final summary — ask the user
 
-Print a short summary of the specs generated, then ask:
+Ask two questions in sequence, waiting for each answer:
 
-"¿Quieres que implemente las features ahora?
-1. Sí — implementa todas las features en orden lógico
-2. No — me encargo yo manualmente"
+**1.** "¿Quieres que implemente las features ahora?
+- Sí — implementa en orden lógico: lee cada spec, propone el plan, espera tu OK, luego codea
+- No — me encargo yo"
 
-- If **1**: proceed to Step 8
-- If **2**: skip to Step 9
-
----
-
-## Step 8 — Implement features (spec-driven, modular, with quality design)
-
-Implement each feature one by one following this process for each:
-
-1. Read the spec from `docs/specs/<feature>.md`
-2. Announce what you're about to build and wait for OK
-3. Implement following these mandatory rules:
-
-**Modular architecture — non-negotiable:**
-- Each feature lives in its own module with clear inputs/outputs
-- No business logic in UI components — goes in `+page.server.ts` or service layer
-- Modules communicate through typed contracts, never through internals
-- This is NOT a monolith — every module is independently testable and replaceable
-
-**Design quality — read the skills before writing any UI:**
-- Before any UI component → read `skills/senior-frontend.md`
-- Before any user flow or layout → read `skills/senior-design.md`
-- Apply: semantic HTML, accessibility, mobile-first, skeleton loaders, proper empty states
-- One primary action per screen, clear visual hierarchy, no generic AI aesthetics
-- Tap targets 44×44px minimum, inputs with labels, keyboard navigable
-
-**Harness & context engineering — always active:**
-- After each feature commit, `update_docs.py` runs automatically (git hook)
-- CONTEXT.md stays current — the AI never loses context between sessions
-- Specs get their status marker updated automatically (`<!-- status: in-progress -->`)
-
-4. Run `make quality` after each feature — fix any errors before moving to the next
-5. Commit with a descriptive message
-
----
-
-## Step 9 — Final summary and launch
-
-**Print this after all features are implemented (or if user chose to implement manually):**
-
-```
-✅ Bootstrap completo — <project-name>
-📁 <ruta del proyecto>
-
-Lo que se construyó:
-  <lista de features implementadas con una línea cada una>
-
-Arquitectura:
-  - Modular — cada feature en su propio módulo con contratos tipados
-  - Harness activo — docs se actualizan solos tras cada commit y sesión
-  - Spec-driven — todo el código tiene su spec en docs/specs/
-  - Diseño de calidad — senior-frontend + senior-design aplicados
-
-Stack: <stack> — <razón>
-🔄 Docs vivos: CONTEXT.md · constitution.md · plan/v1-mvp.md · specs/*.md
-🔗 Git hooks: pre-commit (avisa si falta spec) · post-commit (actualiza docs)
-```
-
-**Then ask — wait for the answer:**
-
-"¿Levantamos el proyecto localmente ahora? (`make install-dev && make dev`)"
-
-- If **yes**: run `make install-dev && make dev` and confirm it started
-- If **no**: print the commands to run manually
-
-**After answering:**
-
-```
-Listo. Para agregar una nueva feature:
-→ Escribe "implementar <feature>" — el AI crea la spec, propone el plan y espera tu OK.
-```
+**2.** After implementing (or if user said no): print the summary, then ask:
+"¿Levantamos el proyecto localmente? (`make install-dev && make dev`)"
+- If **yes**: run `make install-dev && make dev`
+- If **no**: print the commands manually
 
 ---
 
 ## Rules always active
 
-1. **Spec before code** — always. No exceptions, not even in long sessions
-2. **Modular architecture** — each module owns its domain, communicates through typed contracts
-3. **Design quality** — read senior-frontend.md and senior-design.md before any UI
-4. **`make quality` must pass** before every commit
-5. **Living docs** — update automatically after every commit and session (hooks)
-6. **Never commit `.env`** — only `.env.example`
+1. **Before finishing any task:** `make quality` must pass
+2. **Each new feature:** write spec in `docs/specs/<name>.md` **before** coding
+3. **Each architectural decision:** add ADR in `docs/plan/v1-mvp.md`
+4. **Each session end:** all living docs update automatically (Stop hook)
+5. **Each commit:** all living docs update automatically (post-commit hook)
+6. **Never commit `.env`** — only `.env.example` with descriptions
 7. **No tests, no merge**
+8. **After bootstrap you can keep iterating** — write "iterate and improve" so Claude reviews `docs/`, completes empty stubs, improves existing specs, and runs `scripts/update_docs.py`
+9. **After each commit you make, hooks update all docs automatically** — you don't need to do it manually
+
+---
+
+## Final summary block — always print this at the end
+
+```
+---
+✅ Bootstrap completo — <project-name>
+
+Docs generados:
+  docs/vision/product-vision.md
+  docs/constitution/constitution.md
+  docs/plan/v1-mvp.md
+  docs/clarify/assumptions.md
+  docs/modular/modules.md
+  docs/sdd/arquitectura.md
+
+Specs iniciales listas en docs/specs/:
+  <lista de specs generadas>
+
+Stack: <stack elegido> — <razón en una línea>
+
+🔄 Los docs se actualizan solos después de cada commit y sesión.
+
+Próximo paso: elige una spec de docs/specs/ y escribe "implementar <feature>"
+→ El AI lee la spec, propone el plan y espera tu OK antes de codear.
+```
 
 ---
 

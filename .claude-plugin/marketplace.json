@@ -1,12 +1,12 @@
 {
   "name": "ai-app-blueprint",
-  "owner": { "name": "pacman-db" },
+  "owner": { "name": "handoffcl" },
   "plugins": [
     {
       "name": "ai-app-blueprint",
       "source": {
         "source": "url",
-        "url": "https://github.com/pacman-db/ai-app-blueprint.git"
+        "url": "https://github.com/handoffcl/ai-app-blueprint.git"
       },
       "description": "Structured Vibe Coding — bootstrap any app from a single idea",
       "strict": false

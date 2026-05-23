@@ -17,13 +17,26 @@ Este blueprint hace que tu repo sea auto-documentado para la IA — arquitectura
 
 ### Inicio rápido
 
+**Claude Code CLI:**
 ```bash
-git clone https://github.com/handoffcl/ai-app-blueprint
-cp commands/bootstrap-app.md ~/.claude/commands/
+# 1. Instala el plugin (una sola vez)
+/plugin marketplace update ai-app-blueprint
+/plugin install ai-app-blueprint@ai-app-blueprint
 
-# Luego en cualquier sesión de Claude Code:
+# 2. En una carpeta vacía de tu nuevo proyecto:
 /bootstrap-app
+# → El agente pregunta tu idea y crea todo
 ```
+
+**Extensión Handoff VS Code:**
+```
+1. Abre una carpeta vacía en VS Code
+2. Cmd+Shift+P → "Handoff: Install Blueprint"
+3. Click en Plugin → selecciona "bootstrap-app"
+# → El agente pregunta tu idea y crea todo
+```
+
+> ⚠️ No escribas "ejecuta bootstrap" en lenguaje natural — el agente podría confundirlo con el script de setup. Usa siempre `/bootstrap-app` o el botón Plugin.
 
 ---
 

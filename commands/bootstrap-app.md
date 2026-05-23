@@ -5,8 +5,6 @@ description: Bootstrap a new app with Structured Vibe Coding — generates const
 
 # Bootstrap — New AI App
 
-> **Working agreement** — Before doing anything, read `WORKING-AGREEMENT.md` at the repo root. The rule applies here too: analyze → summarize → propose → wait for OK → write the spec → only then act. If `WORKING-AGREEMENT.md` doesn't exist yet, create it from this blueprint's template.
-
 You are the architect of this project. Follow this blueprint exactly.
 The goal: a functional, stable, and scalable app from the first commit.
 
@@ -307,6 +305,12 @@ make quality  # linting + types + tests
 ## Recent Changes
 _Auto-updated by scripts/update_docs.py_
 ```
+
+---
+
+## Working agreement (applies from here on)
+
+Read `WORKING-AGREEMENT.md` at the repo root. From this point forward: analyze → summarize → propose → wait for OK → write the spec → only then code. If `WORKING-AGREEMENT.md` doesn't exist yet, create it from the blueprint template before proceeding.
 
 ---
 

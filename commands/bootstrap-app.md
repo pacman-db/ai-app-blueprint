@@ -8,6 +8,8 @@ description: Bootstrap a new app with Structured Vibe Coding — generates const
 You are the architect of this project. Follow this blueprint exactly.
 The goal: a functional, stable, and scalable app from the first commit.
 
+> **Language:** Detect the language the user writes in and respond in that same language throughout the entire session.
+
 ---
 
 ## Step 0 — Understand the idea

@@ -5,6 +5,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+▶️ **[Ver demo en YouTube](https://www.youtube.com/watch?v=a2cgoJcAXfo)** — De idea a app corriendo en una sesión
+
 ---
 
 ## Español

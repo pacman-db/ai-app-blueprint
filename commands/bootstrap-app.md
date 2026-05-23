@@ -325,15 +325,6 @@ These specs are **mandatory before any code is written**. They are the contract.
 
 ---
 
-## Before the final summary — ask the user
-
-"¿Listo para arrancar tu MVP localmente?"
-
-- If **yes**: run `make install-dev && make dev`
-- If **no**: print the commands to run manually and stop
-
----
-
 ## Rules always active
 
 1. **Before finishing any task:** `make quality` must pass
@@ -368,10 +359,17 @@ Specs iniciales listas en docs/specs/:
 Stack: <stack elegido> — <razón en una línea>
 
 🔄 Los docs se actualizan solos después de cada commit y sesión.
-
-Próximo paso: elige una spec de docs/specs/ y escribe "implementar <feature>"
-→ El AI lee la spec, propone el plan y espera tu OK antes de codear.
 ```
+
+After printing the summary, ask **in sequence** and wait for each answer:
+
+**Pregunta 1:** "¿Quieres que implemente las features ahora?"
+- **Sí** — implementa en orden lógico: lee cada spec, propone el plan, espera tu OK, codea (usa `skills/senior-frontend.md` y `skills/senior-design.md` para UI), corre `make quality`, hace commit
+- **No** — continúa a la siguiente pregunta
+
+**Pregunta 2:** "¿Levantamos el proyecto localmente? (`make install-dev && make dev`)"
+- **Sí** — ejecuta `make install-dev && make dev`
+- **No** — imprime los comandos y termina
 
 ---
 

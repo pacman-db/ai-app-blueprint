@@ -17,25 +17,32 @@ Este blueprint hace que tu repo sea auto-documentado para la IA — arquitectura
 
 ### Inicio rápido
 
-**Claude Code CLI (VS Code o terminal):**
-```bash
-# 1. Clona e instala (una sola vez)
-git clone https://github.com/handoffcl/ai-app-blueprint
-cd ai-app-blueprint
-bash scripts/install.sh
+**Prerequisitos:** Git · VS Code · [extensión Claude Code](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) instalada
 
-# 2. Abre una carpeta vacía en VS Code con Claude Code y escribe:
-ejecuta bootstrap
-# → El agente lee commands/bootstrap-app.md, pregunta tu idea y crea todo
+**Paso 1** — Abre VS Code y crea una carpeta vacía para tu nuevo proyecto
+
+**Paso 2** — En el chat de Claude Code, escribe exactamente esto:
+```
+Clona el siguiente repo https://github.com/handoffcl/ai-app-blueprint y ejecuta bootstrap
 ```
 
-**Extensión Handoff VS Code:**
-```
-1. Abre una carpeta vacía en VS Code
-2. Cmd+Shift+P → "Handoff: Install Blueprint"
-3. Click en Plugin → selecciona "bootstrap-app"
-# → El agente pregunta tu idea y crea todo
-```
+**Paso 3** — Claude preguntará:
+> *"Cuéntame tu idea: ¿qué hace, para quién es y qué puede hacer un usuario en ella?"*
+
+**Paso 4** — Describe tu app en lenguaje natural. Claude genera todo solo:
+specs, arquitectura, docs, estructura del proyecto y código.
+
+---
+
+**Con la extensión Handoff VS Code:**
+
+**Paso 1** — Abre VS Code con una carpeta vacía
+
+**Paso 2** — `Cmd+Shift+P` → `Handoff: Install Blueprint`
+
+**Paso 3** — Click en **Plugin** → selecciona **bootstrap-app**
+
+**Paso 4** — Describe tu idea → Claude genera todo solo
 
 ---
 

@@ -14,30 +14,48 @@ The goal: a functional, stable, and scalable app from the first commit.
 
 ## Step 0 — Understand the idea
 
-Before creating anything, ask the user two questions and wait for both answers before generating anything:
+Ask the user ONE question and wait for the answer before generating anything:
 
-**Question 1:** "What app do you want to build? Describe it in one or two sentences."
+---
+**Cuéntame sobre tu app:**
 
-**Question 2:** "What stack do you prefer?
-1. SvelteKit full-stack (frontend + backend in one repo, server routes as API) — recommended for most projects
-2. SvelteKit + FastAPI separate (when you need Python pipelines, ML, or async Claude SDK)
-3. Other (describe it)"
+1. ¿Qué hace y qué problema resuelve?
+2. ¿Para quién es y cómo genera valor? (gratis, suscripción, marketplace, interna, etc.)
+3. ¿Cuáles son las 3-5 cosas principales que puede hacer un usuario?
 
-Wait for both answers. Then use them to:
+---
+
+Wait for the answer. Do NOT ask follow-up questions. Do NOT proceed until you have it.
+
+Use the answers to:
 - Name the project (slug format, e.g. `meeting-to-tasks`)
 - Fill `CONTEXT.md` with the real problem, not placeholders
 - Write `docs/vision/product-vision.md` adapted to that idea
-- Write `docs/constitution/constitution.md` with principles that make sense for that domain
-- Write `docs/plan/v1-mvp.md` with ADRs relevant to that stack and problem
+- Write `docs/constitution/constitution.md` with principles for that domain
+- Write `docs/plan/v1-mvp.md` with ADRs relevant to the stack and problem
 - Write `docs/clarify/assumptions.md` with real open questions for that product
+- Write `docs/modular/modules.md` with the module breakdown inferred from the features
+- Write `docs/sdd/arquitectura.md` with the data flow and system design
 
-Do not proceed to Step 1 until you have both answers from the user.
 Do not use generic placeholders anywhere — every doc must reflect the actual project.
 
+**Stack decision — automatic, never ask the user:**
+
+Analyze the idea and decide silently:
+- If the idea involves AI/LLM calls, ML, Python libraries, data pipelines, or heavy async processing → **SvelteKit + FastAPI**
+- Everything else (CRUDs, marketplaces, dashboards, SaaS, search, booking) → **SvelteKit fullstack**
+
+Announce the chosen stack once with a one-line reason, then offer a correction window:
+
+> "Usaré **[stack]** porque [razón en una línea]. ¿Quieres cambiar algo del stack o seguimos?"
+
+If the user confirms or says nothing → proceed to Step 1.
+If the user specifies a different stack → adapt and proceed.
+
 **Stack rules:**
-- If option 1 (SvelteKit full-stack): never mention FastAPI, uvicorn, Python backend, or requirements.txt. Use SvelteKit server routes (`+server.ts`) as the API layer.
-- If option 2 (SvelteKit + FastAPI): generate both repos with a clear API contract between them.
-- If option 3: adapt the blueprint to the described stack.
+- SvelteKit fullstack: use server routes (`+server.ts`) as the API layer. Never mention FastAPI, Python backend, or requirements.txt.
+- SvelteKit + FastAPI: generate both with a clear API contract between them.
+- User-specified stack: adapt the blueprint structure to it.
 
 ---
 
@@ -49,7 +67,7 @@ Do not use generic placeholders anywhere — every doc must reflect the actual p
 | Frontend | SvelteKit | SPA, minimal bundle, Svelte 5 `$state()` |
 | Database | PostgreSQL (prod) / SQLite (dev) · SQLAlchemy | ORM + migrations |
 | Auth | Firebase Auth (Google + Microsoft) | HTTP-only cookie |
-| Payments | Stripe (global) · Reveniu (LATAM) | Choose by market |
+| Payments | Stripe | Only if idea requires it |
 | Deploy | Railway | Managed PostgreSQL + app in one place |
 | AI | Claude API (Anthropic) | Haiku for cheap tasks, Sonnet for analysis |
 | Quality | ruff · mypy · pytest | No exceptions |

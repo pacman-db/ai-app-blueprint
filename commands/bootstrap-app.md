@@ -103,7 +103,7 @@ Create exactly this structure before writing any code:
 │   │   └── assumptions.md       # assumptions + open questions (+ auto Last Review)
 │   ├── modular/
 │   │   └── modules.md           # module contracts
-│   ├── sdd/
+│   ├── architecture/
 │   │   └── arquitectura.md      # system design document
 │   └── specs/                   # one spec per feature
 │       └── _spec.template.md    # use this as starting point

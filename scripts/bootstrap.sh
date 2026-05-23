@@ -64,7 +64,7 @@ find . -name "*.md" -not -path "./.git/*" | xargs sed -i '' \
 
 # ── Create base directory structure ───────────────────────────────────────────
 mkdir -p docs/specs docs/vision docs/constitution docs/clarify
-mkdir -p docs/plan docs/modular docs/sdd
+mkdir -p docs/plan docs/modular docs/architecture
 mkdir -p tests observability
 mkdir -p .claude/commands
 

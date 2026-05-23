@@ -17,15 +17,11 @@ The goal: a functional, stable, and scalable app from the first commit.
 Ask the user ONE question and wait for the answer before generating anything:
 
 ---
-**Cuéntame sobre tu app:**
-
-1. ¿Qué hace y qué problema resuelve?
-2. ¿Para quién es y cómo genera valor? (gratis, suscripción, marketplace, interna, etc.)
-3. ¿Cuáles son las 3-5 cosas principales que puede hacer un usuario?
+**Cuéntame tu idea: ¿qué hace, para quién es y qué puede hacer un usuario en ella?**
 
 ---
 
-Wait for the answer. Do NOT ask follow-up questions. Do NOT proceed until you have it.
+Wait for the answer. Do NOT ask follow-up questions. If the answer is too vague to infer the main features, ask ONE specific clarification before proceeding. Do NOT proceed until you have enough to fill every doc with real content.
 
 Use the answers to:
 - Name the project (slug format, e.g. `meeting-to-tasks`)
@@ -314,16 +310,27 @@ _Auto-updated by scripts/update_docs.py_
 
 ---
 
+## Before the final summary — generate initial specs
+
+Before printing the summary, generate one spec file per main feature inferred from the user's answer.
+Use the template at `docs/specs/_spec.template.md` as base.
+
+**Rules:**
+- One file per feature: `docs/specs/<feature-slug>.md`
+- Fill every section with real content from the idea — no placeholders
+- Include real behavior steps, real edge cases, real test scenarios for that domain
+- Mark each spec with `<!-- status: pending -->` at the top
+
+These specs are **mandatory before any code is written**. They are the contract.
+
+---
+
 ## Before the final summary — ask the user
 
-"Do you want to start the project locally now?
-1. Yes — install dependencies and start the server
-2. Yes + Railway — start local and configure deploy
-3. Not yet"
+"¿Listo para arrancar tu MVP localmente?"
 
-- If **1**: run `make install-dev && make dev`
-- If **2**: run `make install-dev && make dev`, then `railway login && railway init && railway up`
-- If **3**: continue without starting
+- If **yes**: run `make install-dev && make dev`
+- If **no**: print the commands to run manually and stop
 
 ---
 
@@ -345,19 +352,25 @@ _Auto-updated by scripts/update_docs.py_
 
 ```
 ---
-✅ Bootstrap complete.
+✅ Bootstrap completo — <project-name>
 
-To continue, write any of these:
-→ "continue with recommended" — Claude reads CONTEXT.md and knows what comes next
-→ "iterate and improve the product" — Claude reviews docs/ and completes what's missing
-→ "complete the docs and context files" — Claude runs scripts and fills empty stubs
-→ "update the docs" — Claude runs scripts/update_docs.py manually
+Docs generados:
+  docs/vision/product-vision.md
+  docs/constitution/constitution.md
+  docs/plan/v1-mvp.md
+  docs/clarify/assumptions.md
+  docs/modular/modules.md
+  docs/sdd/arquitectura.md
 
-🔄 Docs update automatically after every commit and session (Stop hook active):
-- CONTEXT.md → recent changes
-- constitution.md → project status
-- plan/v1-mvp.md → build progress
-- specs/*.md → status of each spec
+Specs iniciales listas en docs/specs/:
+  <lista de specs generadas>
+
+Stack: <stack elegido> — <razón en una línea>
+
+🔄 Los docs se actualizan solos después de cada commit y sesión.
+
+Próximo paso: elige una spec de docs/specs/ y escribe "implementar <feature>"
+→ El AI lee la spec, propone el plan y espera tu OK antes de codear.
 ```
 
 ---

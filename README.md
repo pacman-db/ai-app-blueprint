@@ -5,7 +5,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-▶️ **[Ver demo en YouTube](https://www.youtube.com/watch?v=a2cgoJcAXfo)** — De idea a app corriendo en una sesión
+[![Ver demo en YouTube](https://img.youtube.com/vi/a2cgoJcAXfo/maxresdefault.jpg)](https://www.youtube.com/watch?v=a2cgoJcAXfo)
+> De idea a app corriendo en una sesión — Claude Code + Context Engineering + AI App Blueprint
 
 ---
 

@@ -325,12 +325,14 @@ These specs are **mandatory before any code is written**. They are the contract.
 
 ---
 
-## Before the final summary — ask the user
+## STOP — ask the user before printing the final summary
+
+**Do NOT print the final summary yet. First ask this and wait for the answer:**
 
 "¿Listo para arrancar tu MVP localmente?"
 
-- If **yes**: run `make install-dev && make dev`
-- If **no**: print the commands to run manually and stop
+- If **yes**: run `make install-dev && make dev`, then print the final summary
+- If **no**: print the manual commands, then print the final summary
 
 ---
 

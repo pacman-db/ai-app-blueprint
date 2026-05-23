@@ -7,6 +7,8 @@ description: Bootstrap a new app with Structured Vibe Coding — generates const
 
 > **Working agreement** — Before doing anything, read `WORKING-AGREEMENT.md` at the repo root. The rule applies here too: analyze → summarize → propose → wait for OK → write the spec → only then act. If `WORKING-AGREEMENT.md` doesn't exist yet, create it from this blueprint's template.
 
+**This file IS the bootstrap. Do NOT run `bootstrap.sh` — that is a shell utility for a different workflow. Read this file and follow the steps below.**
+
 You are the architect of this project. Follow this blueprint exactly.
 The goal: a functional, stable, and scalable app from the first commit.
 

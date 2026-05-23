@@ -325,17 +325,6 @@ These specs are **mandatory before any code is written**. They are the contract.
 
 ---
 
-## STOP — ask the user before printing the final summary
-
-**Do NOT print the final summary yet. First ask this and wait for the answer:**
-
-"¿Listo para arrancar tu MVP localmente?"
-
-- If **yes**: run `make install-dev && make dev`, then print the final summary
-- If **no**: print the manual commands, then print the final summary
-
----
-
 ## Rules always active
 
 1. **Before finishing any task:** `make quality` must pass
@@ -350,11 +339,13 @@ These specs are **mandatory before any code is written**. They are the contract.
 
 ---
 
-## Final summary block — always print this at the end
+## Final summary block — always execute in this exact order
+
+**Step 1 — Print the summary:**
 
 ```
----
 ✅ Bootstrap completo — <project-name>
+📁 <ruta del proyecto>
 
 Docs generados:
   docs/vision/product-vision.md
@@ -364,14 +355,26 @@ Docs generados:
   docs/modular/modules.md
   docs/sdd/arquitectura.md
 
-Specs iniciales listas en docs/specs/:
-  <lista de specs generadas>
+Specs listas en docs/specs/:
+  <lista de specs con una línea de descripción cada una>
 
 Stack: <stack elegido> — <razón en una línea>
 
 🔄 Los docs se actualizan solos después de cada commit y sesión.
+🔗 Git hooks instalados (pre-commit + post-commit)
+```
 
-Próximo paso: elige una spec de docs/specs/ y escribe "implementar <feature>"
+**Step 2 — Ask and wait for the answer:**
+
+"¿Levantamos el proyecto localmente ahora? (`make install-dev && make dev`)"
+
+- If **yes**: run `make install-dev && make dev` and confirm it started
+- If **no**: print the commands to run manually
+
+**Step 3 — After the user answers, print this final line:**
+
+```
+Todo listo. Para implementar cualquier feature escribe: "implementar <nombre-spec>"
 → El AI lee la spec, propone el plan y espera tu OK antes de codear.
 ```
 

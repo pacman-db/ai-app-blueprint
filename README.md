@@ -469,7 +469,7 @@ Plan / ADRs        → Technical decisions and rationale (+ auto Build Progress)
 Clarify            → Assumptions documented before coding (+ auto Last Review)
 Modular Design     → Clear contracts between modules
 Specs              → One spec per feature, before writing code (+ auto status marker)
-SDD                → System design document
+Architecture       → System design document (data flow, API contracts, module boundaries)
 Development        → Code that implements specs
 Quality            → Linting + types + tests (automated via CI)
 GitHub / CI        → Auto-quality gate on every push

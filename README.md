@@ -20,21 +20,30 @@ Este blueprint hace que tu repo sea auto-documentado para la IA — arquitectura
 
 ### Inicio rápido
 
+**Opción A — Proyecto nuevo (recomendada)**
+
 **Prerequisitos:** Git · VS Code · [extensión Claude Code](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) instalada
 
-**Paso 1** — Abre VS Code y crea una carpeta vacía para tu nuevo proyecto
-
-**Paso 2** — En el chat de Claude Code, escribe exactamente esto:
+1. Abre VS Code y crea una carpeta vacía para tu nuevo proyecto
+2. En el chat de Claude Code escribe:
 ```
 Clona el siguiente repo https://github.com/handoffcl/ai-app-blueprint y ejecuta bootstrap
 ```
+3. Claude preguntará: *"Cuéntame tu idea: ¿qué hace, para quién es y qué puede hacer un usuario en ella?"*
+4. Describe tu app. Claude genera todo solo: specs, arquitectura, docs, estructura y código.
 
-**Paso 3** — Claude preguntará:
-> *"Cuéntame tu idea: ¿qué hace, para quién es y qué puede hacer un usuario en ella?"*
+**Opción B — Proyecto existente**
+```bash
+# En tu sesión de Claude Code:
+# Lee este archivo y adáptalo a nuestro proyecto existente:
+# /path/to/ai-app-blueprint/commands/bootstrap-app.md
+```
 
-**Paso 4** — Describe tu app en lenguaje natural. Claude genera todo solo:
-specs, arquitectura, docs, estructura del proyecto y código.
-
+**Opción C — Comando global de Claude Code**
+```bash
+cp commands/bootstrap-app.md ~/.claude/commands/
+# Luego en cualquier sesión: /bootstrap-app
+```
 
 ---
 
@@ -42,25 +51,36 @@ specs, arquitectura, docs, estructura del proyecto y código.
 
 Stop re-explaining your project to Claude every session.
 
-This blueprint makes your repo self-documenting for AI —
-architecture, decisions, constraints, what's done and what's next.
-Claude reads it at the start of every session and starts working in 30 seconds.
+This blueprint makes your repo self-documenting for AI — architecture, decisions, constraints, what's done and what's next. Claude reads it at the start of every session and starts working in 30 seconds.
 
-## Quickstart
+**Built for Claude Code.** Uses `CLAUDE.md`, slash commands (`/handoff-save`, `/handoff-open`) and native Claude Code hooks. For the model-agnostic version, see [handoff-blueprint](https://github.com/handoffcl/handoff-blueprint).
+
+### Quickstart
+
+**Option A — New project (recommended)**
 
 **Prerequisites:** Git · VS Code · [Claude Code extension](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) installed
 
-**Step 1** — Open VS Code and create an empty folder for your new project
-
-**Step 2** — In the Claude Code chat, write exactly this:
+1. Open VS Code and create an empty folder for your new project
+2. In the Claude Code chat, write:
 ```
 Clone the following repo https://github.com/handoffcl/ai-app-blueprint and run bootstrap
 ```
+3. Claude will ask: *"Tell me your idea: what does it do, who is it for, and what can a user do with it?"*
+4. Describe your app. Claude generates everything: specs, architecture, docs, project structure and code.
 
-**Step 3** — Claude will ask:
-> *"Tell me your idea: what does it do, who is it for, and what can a user do with it?"*
+**Option B — Existing project**
+```bash
+# In your Claude Code session:
+# Read this file and adapt it to our existing project:
+# /path/to/ai-app-blueprint/commands/bootstrap-app.md
+```
 
-**Step 4** — Describe your app in natural language. Claude generates everything on its own: specs, architecture, docs, project structure and code.
+**Option C — Claude Code global command**
+```bash
+cp commands/bootstrap-app.md ~/.claude/commands/
+# Then in any Claude Code session: /bootstrap-app
+```
 
 ---
 
@@ -108,12 +128,14 @@ ai-app-blueprint/
 │       │   └── _spec.template.md ← spec template with status marker
 │       ├── clarify/             ← assumptions (+ auto Last Review)
 │       ├── modular/             ← module map + contracts
-│       └── architecture/        ← system design document (architecture, API contracts)
+│       ├── architecture/        ← system design document (architecture, API contracts)
+│       │   └── contracts/       ← OAS contracts — one YAML per module, generated at bootstrap
 │
 ├── scripts/
 │   ├── update_docs.py           ← harness core: auto-updates all living docs after each commit/session
+│   ├── context_usage.py         ← reads active Claude Code session and shows token usage + warnings
 │   ├── install_hooks.sh         ← installs git hooks: pre-commit (spec check) + post-commit (docs)
-│   └── setup.sh             ← full project bootstrapper
+│   └── setup.sh                 ← full project bootstrapper
 │
 ├── github/
 │   ├── workflows/ci.yml         ← quality gate on every push
@@ -185,67 +207,21 @@ The agent reads `CONTEXT.md` (current, lean). Only goes deeper if the task requi
 
 The harness is what makes this different from a static template. Docs don't go stale. Rules don't get forgotten. Context survives across sessions without manual work.
 
----
+### Session context limit — act before it's too late
 
-## Key files — what they do, what you gain, what you lose without them
+`scripts/context_usage.py` reads the active Claude Code session and shows token usage — replicating what `/context` shows in the UI, runnable from the terminal at any time:
 
-### `WORKING-AGREEMENT.md` (new)
+```bash
+python3 scripts/context_usage.py          # one-shot report
+python3 scripts/context_usage.py --watch  # check every 60s
+```
 
-**What it covers**
-Every code change: new features, bug fixes, refactors, even trivial tweaks.
-Exceptions: only pure questions (no code changes) and cosmetic batches
-(rename, format) — and even those get explained before pushing.
+| Free space | Action |
+|---|---|
+| ≤ 20% | ⚠️ Run `/handoff-save` soon |
+| ≤ 10% | 🔴 Stop. Run `/handoff-save` → open new session → `/handoff-open` |
 
-**What you gain**
-Control over what Claude does before it touches anything. The human
-validates intent before tokens get spent. Every decision leaves a paper
-trail: a spec that future sessions and other agents can read.
-
-**What you lose without it**
-Claude freestyles. It mixes decisions, improvises conventions, and leaves
-debt that only shows up weeks later when someone asks "why is it like
-this?" — and nobody knows. You pay tokens to explore problems Claude
-should have asked you about first.
-
----
-
-### `CLAUDE.md` (the project's rulebook)
-
-**What it covers**
-The project's operating rules: code conventions, quality gate, folder
-structure, what NOT to do, available roles. Plus pointers to
-`CONTEXT.md` and `WORKING-AGREEMENT.md`.
-
-**What you gain**
-Every session starts with the project's rules already loaded. Claude
-knows your line length, naming conventions, what tests to run, and
-which files are off-limits. You stop re-explaining the same setup.
-
-**What you lose without it**
-You re-explain the project every session. Claude invents conventions
-that contradict the rest of your repo. Inconsistencies pile up across
-files, all looking "reasonable" in isolation but jarring as a whole.
-
----
-
-### `CONTEXT.md` (living memory)
-
-**What it covers**
-The current state of the project: what shipped, what's in progress,
-what was decided and why, what NOT to touch. Auto-updated after every
-commit by the post-commit hook.
-
-**What you gain**
-Continuous memory between sessions. Session 50 starts with the
-condensed history of sessions 1 through 49. Claude doesn't re-open
-decisions you already settled, doesn't suggest what you already ruled
-out, and doesn't break what was deliberately built.
-
-**What you lose without it**
-Every session starts from zero. You pay 10-15 minutes (and the
-matching tokens) re-explaining what the project is. Claude suggests
-the alternative you already discarded. Decisions get re-opened by
-accident. Context evaporates between conversations.
+`WORKING-AGREEMENT.md` and `CLAUDE.md` include these thresholds as active rules so Claude reminds you before the session fills up.
 
 ---
 
@@ -258,39 +234,6 @@ The blueprint isn't a new methodology — it's the automated implementation of t
 - **Modular architecture + DDD lite** — modules with clear contracts. *Here:* `docs/modular/` defines the contracts, `docs/architecture/` the system design.
 
 What's new is not the methodology — it's that Claude puts it into practice from your idea, and the docs stay alive across the project's lifetime.
-
----
-
-## Quick Start
-
-### Option A — New project
-```bash
-# 1. Clone this blueprint
-git clone https://github.com/handoffcl/ai-app-blueprint
-cd ai-app-blueprint
-
-# 2. Bootstrap your project (English, default)
-bash scripts/setup.sh my-app-name
-
-# 3. Bootstrap in Spanish
-bash scripts/setup.sh mi-app --lang es
-
-# 4. Open in Claude Code and start building
-# All living docs will auto-update after every session and commit
-```
-
-### Option B — Existing project
-```
-# In your Claude Code session:
-Read this file and adapt it to our existing project:
-/path/to/ai-app-blueprint/commands/bootstrap-app.md
-```
-
-### Option C — Claude Code global command
-```bash
-cp commands/bootstrap-app.md ~/.claude/commands/
-# Then in any Claude Code session: /bootstrap-app
-```
 
 ---
 

@@ -154,8 +154,7 @@ ai-app-blueprint/
 │   └── security-review.md       ← security engineer mode
 │
 └── examples/
-    ├── task-manager/            ← Example output: task manager app
-    └── bookia/                  ← Bookia (bookia.cl)
+    └── task-manager/            ← Example output: task manager app
 ```
 
 ---

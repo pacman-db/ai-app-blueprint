@@ -104,7 +104,9 @@ Create exactly this structure before writing any code:
 │   ├── modular/
 │   │   └── modules.md           # module contracts
 │   ├── architecture/
-│   │   └── arquitectura.md      # system design document
+│   │   ├── arquitectura.md      # system design document
+│   │   └── contracts/           # OAS contracts — one YAML per module
+│   │       └── _contract.template.yaml
 │   └── specs/                   # one spec per feature
 │       └── _spec.template.md    # use this as starting point
 │
@@ -128,7 +130,33 @@ Create exactly this structure before writing any code:
 
 ---
 
-## Step 2 — Auto-context hooks (always install both)
+## Step 2 — Generate OAS contracts
+
+After generating `docs/architecture/arquitectura.md` and `docs/modular/modules.md`, generate one OAS contract per module.
+
+**Rules:**
+- One file per module: `docs/architecture/contracts/<module-slug>-api.yaml`
+- Use `docs/architecture/contracts/_contract.template.yaml` as base
+- Fill with real routes, schemas and fields inferred from the module's spec and architecture — no placeholders
+- Naming conventions (non-negotiable):
+  - Collections plural: `GET /users`, `GET /orders`
+  - Singular: `GET /users/{userId}` — suffix `Id` in camelCase
+  - Fields: camelCase — `userId`, `createdAt`, `totalAmount`
+  - Dates: ISO 8601 — `2026-05-24T10:30:00Z`
+  - IDs: UUID v4, always `string`
+- Response envelope always consistent:
+  - Collection → `{ data: [], meta: { total, page, pageSize } }`
+  - Single → `{ data: {} }`
+  - Error → `{ error: { code: "SCREAMING_SNAKE_CASE", message: "..." } }`
+- Skip modules with no HTTP interface (e.g. static data modules)
+
+Add generated contracts to the final summary block.
+
+---
+
+## Step 3 — Auto-context hooks (always install both)
+
+
 
 ### A — Claude Code Stop Hook (.claude/settings.json)
 ```json
@@ -167,11 +195,16 @@ Generate the Makefile based on the chosen stack:
 ```makefile
 install-dev:
 	npm install
+	npm install -g @stoplight/spectral-cli
 
 quality:
 	npm run check      # svelte-check + TypeScript
 	npm run lint       # eslint
 	npm run test       # vitest
+	make validate-contracts
+
+validate-contracts:
+	spectral lint docs/architecture/contracts/*.yaml --ruleset @stoplight/spectral-oas 2>/dev/null || true
 
 dev:
 	npm run dev
@@ -188,6 +221,7 @@ test:
 install-dev:
 	pip install -r requirements.txt -r requirements-dev.txt
 	cd frontend && npm install
+	npm install -g @stoplight/spectral-cli
 
 quality:
 	.venv/bin/ruff check src/ tests/ main.py --fix
@@ -195,6 +229,10 @@ quality:
 	.venv/bin/mypy src/
 	.venv/bin/pytest tests/ -v
 	cd frontend && npm run check
+	make validate-contracts
+
+validate-contracts:
+	spectral lint docs/architecture/contracts/*.yaml --ruleset @stoplight/spectral-oas 2>/dev/null || true
 
 dev-api:
 	.venv/bin/uvicorn main:app --reload
@@ -359,12 +397,16 @@ Docs generados:
   docs/modular/modules.md
   docs/architecture/arquitectura.md
 
+Contratos OAS generados en docs/architecture/contracts/:
+  <lista de contratos generados — ej: users-api.yaml, orders-api.yaml>
+
 Specs iniciales listas en docs/specs/:
   <lista de specs generadas>
 
 Stack: <stack elegido> — <razón en una línea>
 
 🔄 Los docs se actualizan solos después de cada commit y sesión.
+🔒 Contratos OAS validados con Spectral en cada make quality.
 ```
 
 After printing the summary, ask **in sequence** and wait for each answer:

@@ -8,6 +8,10 @@
 To save context before closing: `/handoff-save`
 To load context at session start: `/handoff-open`
 
+> **⚠️ Context limit:** Check free space in the Claude Code session panel.
+> - ≤ 20% free → run `/handoff-save` soon
+> - ≤ 10% free → stop, run `/handoff-save`, open new session, run `/handoff-open`
+
 ---
 
 ## 🔴 Rule #1 — Spec before code. Always.

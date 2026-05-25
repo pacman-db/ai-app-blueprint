@@ -16,7 +16,7 @@ Deja de re-explicarle tu proyecto a Claude en cada sesión.
 
 Este blueprint hace que tu repo sea auto-documentado para la IA — arquitectura, decisiones, restricciones, qué está hecho y qué sigue. El agente lo lee al inicio de cada sesión y empieza a trabajar en 30 segundos.
 
-**Agnóstico al modelo.** Funciona con Claude Code CLI, la extensión Handoff VS Code, GPT, Gemini y cualquier agente que respete `CONTEXT.md` y `WORKING-AGREEMENT.md`.
+**Diseñado para Claude Code.** Usa `CLAUDE.md`, comandos slash (`/handoff-save`, `/handoff-open`) y hooks nativos de Claude Code. Si buscas la versión agnóstica al modelo, ve a [handoff-blueprint](https://github.com/handoffcl/handoff-blueprint).
 
 ### Inicio rápido
 

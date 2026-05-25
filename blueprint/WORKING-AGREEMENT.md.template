@@ -44,6 +44,19 @@ Only two:
 
 ---
 
+## Session context limit — act before it's too late
+
+Claude Code shows context usage in the UI (top of the session panel).
+
+| Free space | Action |
+|---|---|
+| ≤ 20% | ⚠️ Run `/handoff-save` soon — context is nearly full |
+| ≤ 10% | 🔴 Stop. Run `/handoff-save` now, open a new session, run `/handoff-open` |
+
+**Why:** when free space hits 0%, the session compresses and loses context. The model starts making decisions without full history. `/handoff-save` captures everything before that happens — `/handoff-open` restores it in the next session in 30 seconds.
+
+---
+
 ## Why this matters in this blueprint
 
 This blueprint is DDD lite, SDD and modular architecture put into practice. The AI generates the methodology (specs, contracts, architecture) from your idea instead of you writing it by hand.

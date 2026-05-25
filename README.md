@@ -439,45 +439,6 @@ CONTEXT.md         → Living memory, updated after every session and commit
 
 ---
 
-## Real-world examples
-
-> All examples are the blueprint author's own products — not a geographic limitation.
-> The blueprint works with any stack, language, and market.
-
-### [handoff.cl](https://handoff.cl) — Handoff
-
-Multi-LLM chat platform. Share and continue conversations across Claude, GPT, Gemini, Mistral and Perplexity with full context preserved.
-
-- **Stack:** FastAPI + SvelteKit 5 + Firebase Auth + PostgreSQL (Railway) + SSE streaming
-- **Features shipped:** multi-model routing, context management, tool calling (web search via Perplexity), progressive summarization, token counting, admin panel, sharing by URL
-- **Pattern demonstrated:** Multi-provider LLM adapters, streaming SSE, encrypted API keys (AES-256), model routing by message complexity, living docs auto-updated after every commit.
-- Built with **Claude Code only** — no GPT, no Gemini used during development.
-
----
-
-### [igris.cl](https://igris.cl) — Igris Validate + Hipotecario
-
-Chilean identity document validator + mortgage evaluator.
-Built entirely with this blueprint. Both products in production.
-
-- **Validate:** 4-layer AI pipeline (format → pixels → Haiku → Sonnet). 85% of bad inputs rejected before AI.
-- **Hipotecario:** Rule-based mortgage evaluator with per-bank policy pattern. 5 entities active.
-- **Pattern demonstrated:** Policy pattern, cost-proportional pipeline, B2B API keys, unified payment webhook.
-
-### Generic example — task manager
-
-→ [See bootstrap output](examples/task-manager/)
-
----
-
-### [bookia.cl](https://bookia.cl) — Bookia
-
-SaaS platform built with the same blueprint in a different domain.
-
-→ [Full example](examples/bookia/)
-
----
-
 ## Philosophy
 
 > The best repos are self-documenting. The best AI-assisted repos are self-documenting *for AI*.

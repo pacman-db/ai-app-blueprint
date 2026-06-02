@@ -169,7 +169,7 @@ A harness wraps an AI agent's sessions with infrastructure that fires automatica
 flowchart TD
     A[git commit] --> B[pre-commit hook]
     A --> C[post-commit hook]
-    B --> B1["⚠️ warn: src/ changed without spec"]
+    B --> B1["🚫 BLOCKS commit: src/ changed without spec"]
     C --> D[update_docs.py]
     E[AI agent session ends] --> F{hook available?}
     F -->|onSessionEnd .handoff/settings.json| D
@@ -185,6 +185,10 @@ Three things update automatically in CONTEXT.md after every session:
 - **Recent Changes** — classified commits (feat / fix / infra)
 - **Specs Needed** — src/ files changed without a matching spec (the gap detector)
 - **Working Agreement (active)** — rule reminder so the agent never forgets even in long sessions
+
+**Pre-commit is a hard block** — if `src/` changes without a spec in `docs/specs/`, the commit fails with `exit 1`. The agent physically cannot commit code without a spec first. Cosmetic changes can bypass with `--no-verify`.
+
+**Context total warning** — when all `CONTEXT*.md` files combined exceed 600 lines (~7k tokens), the harness injects a warning at the top of `CONTEXT.md` automatically. The warning means: the agent would need to read too much history to have full context — consolidate before the next long session.
 
 ### Context engineering — progressive summarization
 
@@ -203,6 +207,15 @@ flowchart LR
 The agent reads `CONTEXT.md` (current, lean). Only goes deeper if the task requires historical context. Each file is a summary of a phase — not a full log.
 
 > `update_docs.py` manages rotation automatically when CONTEXT.md exceeds the configured line threshold.
+
+**WORKING-AGREEMENT defines what the agent can and cannot touch:**
+
+| ✅ Agent can update (with approval) | 🚫 Agent never touches |
+|---|---|
+| `docs/specs/`, `docs/plan/`, `docs/constitution/` | `CONTEXT.md` — harness only |
+| `docs/clarify/`, `docs/vision/`, `docs/modular/` | `WORKING-AGREEMENT.md` — immutable |
+| `docs/sdd/`, `docs/architecture/contracts/` | `CLAUDE.md` — human decision only |
+| `src/` — only after spec exists and human approved | |
 
 The harness is what makes this different from a static template. Docs don't go stale. Rules don't get forgotten. Context survives across sessions without manual work.
 
